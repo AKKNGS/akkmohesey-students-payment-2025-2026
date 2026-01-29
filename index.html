@@ -3,90 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sokha School Payment Dashboard</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងសាលារៀន - School Admin</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
+        
         <aside class="sidebar">
             <div class="logo">
                 <h2>🏫 School Admin</h2>
             </div>
             <nav>
                 <ul>
-                    <li class="active"><i class="fas fa-home"></i> ទំព័រដើម</li>
-                    <li><i class="fas fa-users"></i> សិស្សទាំងអស់</li>
-                    <li><i class="fas fa-money-bill-wave"></i> ការបង់ប្រាក់</li>
-                    <li><i class="fas fa-cog"></i> ការកំណត់</li>
+                    <li onclick="switchView('dashboard')" class="nav-item active" id="nav-dashboard">
+                        <i class="fas fa-home"></i> ទំព័រដើម
+                    </li>
+                    <li onclick="switchView('students')" class="nav-item" id="nav-students">
+                        <i class="fas fa-users"></i> សិស្សទាំងអស់
+                    </li>
+                    <li onclick="switchView('payments')" class="nav-item" id="nav-payments">
+                        <i class="fas fa-money-bill-wave"></i> ការបង់ប្រាក់
+                    </li>
+                    <li onclick="switchView('settings')" class="nav-item" id="nav-settings">
+                        <i class="fas fa-cog"></i> ការកំណត់
+                    </li>
                 </ul>
             </nav>
         </aside>
 
         <main class="main-content">
-            <header>
-                <h1>ផ្ទាំងគ្រប់គ្រងការបង់ប្រាក់ (2025-2026)</h1>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="ស្វែងរកឈ្មោះ ឬ ID...">
-                </div>
-            </header>
+            
+            <section id="view-dashboard">
+                <header>
+                    <h1>ផ្ទាំងគ្រប់គ្រងការបង់ប្រាក់ (2025-2026)</h1>
+                </header>
 
-            <div class="cards">
-                <div class="card">
-                    <div class="card-info">
-                        <h3>សិស្សសរុប</h3>
-                        <h2 id="totalStudents">0</h2>
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>សិស្សសរុប</h3>
+                            <h2 id="totalStudents">កំពុងផ្ទុក...</h2>
+                        </div>
+                        <div class="card-icon blue">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
                     </div>
-                    <div class="card-icon blue"><i class="fas fa-user-graduate"></i></div>
-                </div>
-                <div class="card">
-                    <div class="card-info">
-                        <h3>បង់រួចរាល់ (Paid)</h3>
-                        <h2 id="totalPaid">0</h2>
-                    </div>
-                    <div class="card-icon green"><i class="fas fa-check-circle"></i></div>
-                </div>
-                <div class="card">
-                    <div class="card-info">
-                        <h3>ជំពាក់ (Partial)</h3>
-                        <h2 id="totalPartial">0</h2>
-                    </div>
-                    <div class="card-icon orange"><i class="fas fa-exclamation-circle"></i></div>
-                </div>
-            </div>
 
-            <div class="filters">
-                <select id="classFilter">
-                    <option value="all">ថ្នាក់ទាំងអស់ (All Classes)</option>
-                    </select>
-            </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>បង់រួចរាល់ (Paid)</h3>
+                            <h2 id="totalPaid">0</h2>
+                        </div>
+                        <div class="card-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>ឈ្មោះសិស្ស</th>
-                            <th>ភេទ</th>
-                            <th>ថ្នាក់ (Class)</th>
-                            <th>តម្លៃសិក្សា</th>
-                            <th>បានបង់</th>
-                            <th>ជំពាក់</th>
-                            <th>ស្ថានភាព</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTableBody">
-                        <tr>
-                            <td colspan="9" style="text-align:center;">កំពុងទាញទិន្នន័យ...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>ជំពាក់ (Partial)</h3>
+                            <h2 id="totalPartial">0</h2>
+                        </div>
+                        <div class="card-icon orange">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; color: #666;">
+                    <p>សូមចុចលើម៉ឺនុយ <strong>"សិស្សទាំងអស់"</strong> ដើម្បីមើលតារាងលម្អិត។</p>
+                </div>
+            </section>
+
+
+            <section id="view-students" style="display: none;">
+                <header>
+                    <h1>បញ្ជីសិស្ស និងស្ថានភាពបង់ប្រាក់</h1>
+                    
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="ស្វែងរកឈ្មោះ ឬ ID...">
+                    </div>
+                </header>
+
+                <div class="filters">
+                    <label for="classFilter">ច្រោះតាមថ្នាក់៖ </label>
+                    <select id="classFilter">
+                        <option value="all">ថ្នាក់ទាំងអស់ (All Classes)</option>
+                        </select>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ឈ្មោះសិស្ស</th>
+                                <th>ភេទ</th>
+                                <th>ថ្នាក់</th>
+                                <th>តម្លៃសិក្សា</th>
+                                <th>បានបង់</th>
+                                <th>ជំពាក់</th>
+                                <th>ស្ថានភាព</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <tr>
+                                <td colspan="9" style="text-align:center; padding: 20px;">
+                                    <i class="fas fa-spinner fa-spin"></i> កំពុងទាញទិន្នន័យ...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <section id="view-payments" style="display: none;">
+                <header><h1>ប្រវត្តិការបង់ប្រាក់</h1></header>
+                <div class="table-container">
+                    <p style="padding: 20px;">មុខងារនេះកំពុងស្ថិតក្នុងការអភិវឌ្ឍ...</p>
+                </div>
+            </section>
+
+
+            <section id="view-settings" style="display: none;">
+                <header><h1>ការកំណត់ប្រព័ន្ធ</h1></header>
+                <div class="card">
+                    <p>អ្នកអាចបន្ថែមមុខងារកំណត់ User ឬ Theme នៅទីនេះ។</p>
+                </div>
+            </section>
+
         </main>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
