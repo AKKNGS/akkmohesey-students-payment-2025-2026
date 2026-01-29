@@ -205,3 +205,41 @@ th, td {
 .form-group { margin-bottom: 15px; }
 .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--card-bg); color: var(--text-main);}
 .save-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+
+/* បន្ថែមនៅខាងក្រោមគេនៃ file style.css */
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 15px;
+}
+
+.pagination-container button {
+    padding: 8px 16px;
+    background: var(--card-bg);
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    color: var(--text-main);
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.pagination-container button:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.pagination-container button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #ccc;
+}
+
+#pageIndicator {
+    font-weight: bold;
+    color: var(--text-sec);
+}
