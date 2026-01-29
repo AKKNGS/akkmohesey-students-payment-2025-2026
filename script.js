@@ -111,3 +111,23 @@ function editStudent(id) {
     // នៅត្រង់នេះ អ្នកអាចបង្កើត Popup Modal ដើម្បីបញ្ចូលលុយ ហើយហៅទៅ function doPost ក្នុង Apps Script
 
 }
+
+function switchView(viewName) {
+    // 1. លាក់គ្រប់ Section ទាំងអស់
+    document.getElementById('view-dashboard').style.display = 'none';
+    document.getElementById('view-students').style.display = 'none';
+    document.getElementById('view-payments').style.display = 'none';
+    document.getElementById('view-settings').style.display = 'none';
+
+    // 2. បង្ហាញតែ Section ដែលបានជ្រើសរើស
+    document.getElementById('view-' + viewName).style.display = 'block';
+
+    // 3. Update ពណ៌លើ Menu (Active Class)
+    // ដក class 'active' ពីគ្រប់ menu
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+
+    // ដាក់ class 'active' លើ menu ដែលកំពុងចុច
+    document.getElementById('nav-' + viewName).classList.add('active');
+}
+
