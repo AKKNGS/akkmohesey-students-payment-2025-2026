@@ -40,26 +40,111 @@ async function fetchData() {
     }
 }
 
+// ... (កូដ fetchData នៅដដែល) ...
+
 function updateDashboard(data) {
-    // 1. បង្ហាញចំនួនសិស្សសរុប
+    // 1. ចំនួនសិស្ស
     document.getElementById("totalStudents").innerText = data.length;
+    document.getElementById("totalPaidStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("paid")).length;
+    document.getElementById("totalPartialStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("partial")).length;
 
-    // 2. រាប់ចំនួន Paid (ប្រើ includes ដើម្បីឱ្យប្រាកដថាចាប់បានត្រឹមត្រូវ)
-    const paidCount = data.filter(s => {
-        // បំប្លែងទៅជាអក្សរតូចទាំងអស់ ហើយឆែកមើលថាមានពាក្យ "paid" ដែរឬទេ?
-        return s.status && s.status.toString().toLowerCase().includes("paid");
-    }).length;
-    
-    document.getElementById("totalPaid").innerText = paidCount;
+    // 2. គណនាលុយ (Function ជំនួយនៅខាងក្រោម)
+    let totalFee = 0;
+    let totalFirst = 0;
+    let totalSecond = 0;
 
-    // 3. រាប់ចំនួន Partial
-    const partialCount = data.filter(s => {
-        // បំប្លែងទៅជាអក្សរតូចទាំងអស់ ហើយឆែកមើលថាមានពាក្យ "partial" ដែរឬទេ?
-        return s.status && s.status.toString().toLowerCase().includes("partial");
-    }).length;
-    
-    document.getElementById("totalPartial").innerText = partialCount;
+    data.forEach(s => {
+        totalFee += parseCurrency(s.schoolFee);
+        // *ចំណាំ: អ្នកត្រូវប្រាកដថា s.firstPayment និង s.secondPayment ត្រូវបានទាញមកពី Google Sheet (មើលជំហានក្រោយ)
+        totalFirst += parseCurrency(s.firstPayment); 
+        totalSecond += parseCurrency(s.secondPayment);
+    });
+
+    document.getElementById("totalSchoolFee").innerText = formatCurrency(totalFee);
+    document.getElementById("totalFirstPay").innerText = formatCurrency(totalFirst);
+    document.getElementById("totalSecondPay").innerText = formatCurrency(totalSecond);
 }
+
+// Function បំប្លែង "600,000 KHR" ទៅជាលេខ 600000
+function parseCurrency(str) {
+    if (!str) return 0;
+    // លុបចោលអក្សរ KHR, $, និង comma (,)
+    let cleanStr = str.toString().replace(/[^0-9.]/g, ''); 
+    return parseFloat(cleanStr) || 0;
+}
+
+// Function បំប្លែងលេខ 600000 ទៅជា "600,000 KHR"
+function formatCurrency(num) {
+    return num.toLocaleString('en-US') + " KHR";
+}
+
+// --- Theme Switcher Logic ---
+const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+const currentTheme = localStorage.getItem('theme');
+
+if (currentTheme) {
+    document.body.classList.add(currentTheme);
+    if (currentTheme === 'dark-mode') {
+        toggleSwitch.checked = true;
+    }
+}
+
+toggleSwitch.addEventListener('change', function(e) {
+    if (e.target.checked) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light-mode');
+    }
+});
+
+// --- Modal & Edit Logic ---
+// (ហៅ function នេះពេលចុចប៊ូតុង Edit ក្នុងតារាង)
+function openEditModal(student) {
+    const modal = document.getElementById("editModal");
+    modal.style.display = "block";
+    
+    document.getElementById("edit-id").value = student.id;
+    document.getElementById("edit-class").value = student.classRoom; // ឈ្មោះ Sheet (Grade2A)
+    document.getElementById("edit-name").value = student.name;
+    document.getElementById("edit-first-pay").value = student.firstPayment;
+    document.getElementById("edit-second-pay").value = student.secondPayment;
+    document.getElementById("edit-total-pay").value = student.totalPaid;
+    document.getElementById("edit-status").value = student.status.trim();
+}
+
+// បិទ Modal
+document.querySelector(".close").onclick = function() {
+    document.getElementById("editModal").style.display = "none";
+}
+
+// Handle Form Submit (Save Data)
+document.getElementById("editForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const saveBtn = document.querySelector(".save-btn");
+    saveBtn.innerText = "កំពុងរក្សាទុក...";
+
+    const updatedData = {
+        id: document.getElementById("edit-id").value,
+        classRoom: document.getElementById("edit-class").value,
+        firstPayment: document.getElementById("edit-first-pay").value,
+        secondPayment: document.getElementById("edit-second-pay").value,
+        totalPaid: document.getElementById("edit-total-pay").value,
+        status: document.getElementById("edit-status").value
+    };
+
+    // ហៅទៅ Google Apps Script (doPost)
+    await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify(updatedData)
+    });
+
+    alert("រក្សាទុកជោគជ័យ!");
+    saveBtn.innerText = "រក្សាទុក (Save)";
+    document.getElementById("editModal").style.display = "none";
+    fetchData(); // ទាញទិន្នន័យថ្មីមកបង្ហាញ
+});
 
 function renderTable(data) {
     const tbody = document.getElementById("studentTableBody");
@@ -148,4 +233,5 @@ function switchView(viewName) {
     const activeNav = document.getElementById('nav-' + viewName);
     if(activeNav) activeNav.classList.add('active');
 }
+
 
