@@ -206,6 +206,44 @@ function filterData() {
     currentPage = 1;
     renderPagination();
 }
+
+// ... (Code ផ្សេងៗដូចជា setupDropdown, updateDashboard, openEdit, editForm submit, Utilities រក្សាទុកដដែល) ...
+// សូមចម្លងកូដ edit logic, parseCurrency, formatCurrency ពី script ចាស់មកដាក់បន្តនៅខាងក្រោមនេះ
+// (កុំភ្លេចដាក់កូដ editForm ឱ្យដំណើរការតែពេល role === 'admin' ក្នុង backend ផងបើអាច ប៉ុន្តែក្នុង frontend យើងបិទប៊ូតុងហើយ)
+
+// --- កូដជំនួយពីផ្នែកមុន (សង្ខេប) ---
+function updateDashboard(data) {
+    document.getElementById("totalStudents").innerText = data.length;
+    // ... (កូដគណនាលុយដដែល) ...
+    // កុំភ្លេចដាក់កូដគណនាដូចមុន
+}
+
+function setupDropdown(data) {
+    const classes = [...new Set(data.map(d => d.classRoom))].sort();
+    const sel = document.getElementById("classFilter");
+    sel.innerHTML = '<option value="all">ថ្នាក់ទាំងអស់</option>';
+    classes.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
+}
+
+// Edit Logic (ដាក់ដដែល)
+function openEdit(id) {
+    // ... copy ពីកូដចាស់ ...
+    // បន្ថែម: ការពារសុវត្ថិភាពម្តងទៀត
+    if(currentUserRole !== 'admin') {
+        alert("អ្នកមិនមានសិទ្ធិកែប្រែទេ!");
+        return;
+    }
+    // ...
+}
+// ... (closeModal, calculateTotal, editForm Listener, parseCurrency, formatCurrency, switchView, toggleTheme, loadTheme - COPY ពីកូដចាស់មកដាក់) ...
+    
+    // Update Dashboard តាម Filter
+    updateDashboard(filteredData);
+    
+    // Reset ទៅទំព័រទី ១ វិញពេល Filter
+    currentPage = 1;
+    renderPagination();
+}
 function setupDropdown(data) {
     const classes = [...new Set(data.map(d => d.classRoom))].sort();
     const sel = document.getElementById("classFilter");
@@ -285,5 +323,6 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
 
 
