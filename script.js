@@ -1,38 +1,25 @@
-// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ (ត្រូវប្រាកដថាបាន Deploy New Version)
+// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ (ត្រូវ Deploy New Version ក្នុង Apps Script ជាមុនសិន)
 const API_URL = "https://script.google.com/macros/s/AKfycbzHbeiK7LPCCTuiPkcdmf24nbiUuL0o3dxO-p-Bld-_wXaWZG4Y2BaSNK-7M1mLYRTVNw/exec";
 
 let allData = [];
 
-// 1. ដំណើរការពេលបើកកម្មវិធី
 document.addEventListener("DOMContentLoaded", () => {
     loadTheme();
     fetchData();
 
-    // Search Filter
-    document.getElementById("searchInput").addEventListener("input", (e) => {
-        filterData();
-    });
-    // Class Filter
-    document.getElementById("classFilter").addEventListener("change", (e) => {
-        filterData();
-    });
-    // Theme Toggle
-    document.getElementById("themeSwitch").addEventListener("change", (e) => {
-        toggleTheme(e.target.checked);
-    });
+    document.getElementById("searchInput").addEventListener("input", filterData);
+    document.getElementById("classFilter").addEventListener("change", filterData);
+    document.getElementById("themeSwitch").addEventListener("change", (e) => toggleTheme(e.target.checked));
 });
 
-// 2. ទាញទិន្នន័យពី Apps Script
 async function fetchData() {
     try {
         const res = await fetch(API_URL);
         const data = await res.json();
         
-        // Filter ចោលទិន្នន័យទទេ និង ID ស្ទួន
+        // Remove duplicates based on ID
         const unique = new Map();
-        data.forEach(item => {
-            if(item.id) unique.set(item.id, item);
-        });
+        data.forEach(item => { if(item.id) unique.set(item.id, item); });
         allData = Array.from(unique.values());
 
         setupDropdown(allData);
@@ -40,20 +27,19 @@ async function fetchData() {
         renderTable(allData);
     } catch (err) {
         console.error(err);
-        alert("បរាជ័យក្នុងការទាញទិន្នន័យ! សូមពិនិត្យមើល URL។");
+        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">បរាជ័យក្នុងការទាញទិន្នន័យ</td></tr>`;
     }
 }
 
-// 3. គណនា និងបង្ហាញលើ Dashboard Cards
 function updateDashboard(data) {
-    // Counts
     document.getElementById("totalStudents").innerText = data.length;
+    
+    // Count Status (Case insensitive check)
     document.getElementById("totalPaidStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("paid")).length;
     document.getElementById("totalPartialStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("partial")).length;
 
-    // Financials (Sum)
+    // Sum Financials
     let sumFee = 0, sumFirst = 0, sumSecond = 0;
-    
     data.forEach(s => {
         sumFee += parseCurrency(s.schoolFee);
         sumFirst += parseCurrency(s.firstPayment);
@@ -65,7 +51,6 @@ function updateDashboard(data) {
     document.getElementById("totalSecondPay").innerText = formatCurrency(sumSecond);
 }
 
-// 4. បង្ហាញតារាង
 function renderTable(data) {
     const tbody = document.getElementById("studentTableBody");
     tbody.innerHTML = "";
@@ -75,7 +60,7 @@ function renderTable(data) {
         return;
     }
 
-    data.forEach(student => {
+    data.slice(0, 100).forEach(student => { // Show first 100 to avoid lag
         let statusClass = student.status && student.status.toLowerCase().includes("paid") ? "status-paid" : "status-partial";
         
         const tr = document.createElement("tr");
@@ -93,63 +78,54 @@ function renderTable(data) {
     });
 }
 
-// 5. Filter Logic
 function filterData() {
     const search = document.getElementById("searchInput").value.toLowerCase();
     const cls = document.getElementById("classFilter").value;
 
     const filtered = allData.filter(s => {
-        const matchSearch = s.name.toLowerCase().includes(search) || s.id.toLowerCase().includes(search);
+        const matchSearch = (s.name && s.name.toLowerCase().includes(search)) || (s.id && s.id.toLowerCase().includes(search));
         const matchClass = cls === "all" || s.classRoom === cls;
         return matchSearch && matchClass;
     });
     
     renderTable(filtered);
-    updateDashboard(filtered); // Update លេខ Dashboard តាម Filter
+    updateDashboard(filtered);
 }
 
 function setupDropdown(data) {
     const classes = [...new Set(data.map(d => d.classRoom))].sort();
     const sel = document.getElementById("classFilter");
     sel.innerHTML = '<option value="all">ថ្នាក់ទាំងអស់</option>';
-    classes.forEach(c => {
-        if(c) sel.innerHTML += `<option value="${c}">${c}</option>`;
-    });
+    classes.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
 }
 
-// 6. Edit System
+// Edit Logic
 function openEdit(id) {
     const student = allData.find(s => s.id === id);
     if(!student) return;
 
     document.getElementById("editModal").style.display = "block";
-    
     document.getElementById("edit-id").value = student.id;
     document.getElementById("edit-class").value = student.classRoom;
     document.getElementById("edit-name").value = student.name;
     document.getElementById("edit-first-pay").value = student.firstPayment;
     document.getElementById("edit-second-pay").value = student.secondPayment;
     document.getElementById("edit-total-pay").value = student.totalPaid;
-    document.getElementById("edit-status").value = student.status.trim();
+    document.getElementById("edit-status").value = student.status ? student.status.trim() : "";
 }
 
-function closeModal() {
-    document.getElementById("editModal").style.display = "none";
-}
+function closeModal() { document.getElementById("editModal").style.display = "none"; }
 
-// Auto Calculate Total in Form
 function calculateTotal() {
     const p1 = parseCurrency(document.getElementById("edit-first-pay").value);
     const p2 = parseCurrency(document.getElementById("edit-second-pay").value);
-    const total = p1 + p2;
-    document.getElementById("edit-total-pay").value = formatCurrency(total);
+    document.getElementById("edit-total-pay").value = formatCurrency(p1 + p2);
 }
 
-// Submit Form (UPDATE)
 document.getElementById("editForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.querySelector(".save-btn");
-    const originalText = btn.innerText;
+    const oldText = btn.innerText;
     btn.innerText = "កំពុងរក្សាទុក...";
     btn.disabled = true;
 
@@ -163,33 +139,18 @@ document.getElementById("editForm").addEventListener("submit", async (e) => {
     };
 
     try {
-        await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
+        await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         alert("ជោគជ័យ!");
         closeModal();
-        fetchData(); // Reload Data
-    } catch (err) {
-        alert("មានបញ្ហាពេលរក្សាទុក!");
-    } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
+        fetchData(); 
+    } catch (err) { alert("មានបញ្ហា!"); } 
+    finally { btn.innerText = oldText; btn.disabled = false; }
 });
 
 // Utilities
-function parseCurrency(str) {
-    if(!str) return 0;
-    // លុប KHR, $, និង , ចេញ ទុកតែលេខ
-    return parseFloat(str.toString().replace(/[^0-9.]/g, '')) || 0;
-}
+function parseCurrency(str) { return parseFloat((str || "0").toString().replace(/[^0-9.]/g, '')) || 0; }
+function formatCurrency(num) { return num.toLocaleString('en-US') + " KHR"; }
 
-function formatCurrency(num) {
-    return num.toLocaleString('en-US') + " KHR";
-}
-
-// Navigation & Theme
 function switchView(view) {
     ['dashboard', 'students', 'settings'].forEach(v => {
         document.getElementById('view-' + v).style.display = 'none';
@@ -200,18 +161,12 @@ function switchView(view) {
 }
 
 function toggleTheme(isDark) {
-    if(isDark) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-    } else {
-        document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-    }
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 }
 
 function loadTheme() {
-    const theme = localStorage.getItem('theme');
-    if(theme === 'dark') {
+    if(localStorage.getItem('theme') === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
         document.getElementById("themeSwitch").checked = true;
     }
