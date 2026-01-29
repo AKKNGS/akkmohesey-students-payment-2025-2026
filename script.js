@@ -44,12 +44,20 @@ function updateDashboard(data) {
     // 1. បង្ហាញចំនួនសិស្សសរុប
     document.getElementById("totalStudents").innerText = data.length;
 
-    // 2. រាប់ចំនួន Paid (ប្រើ toLowerCase និង trim ដើម្បីកុំឱ្យខុសដោយសារដកឃ្លា)
-    const paidCount = data.filter(s => s.status && s.status.trim().toLowerCase() === "paid").length;
+    // 2. រាប់ចំនួន Paid (ប្រើ includes ដើម្បីឱ្យប្រាកដថាចាប់បានត្រឹមត្រូវ)
+    const paidCount = data.filter(s => {
+        // បំប្លែងទៅជាអក្សរតូចទាំងអស់ ហើយឆែកមើលថាមានពាក្យ "paid" ដែរឬទេ?
+        return s.status && s.status.toString().toLowerCase().includes("paid");
+    }).length;
+    
     document.getElementById("totalPaid").innerText = paidCount;
 
     // 3. រាប់ចំនួន Partial
-    const partialCount = data.filter(s => s.status && s.status.trim().toLowerCase() === "partial").length;
+    const partialCount = data.filter(s => {
+        // បំប្លែងទៅជាអក្សរតូចទាំងអស់ ហើយឆែកមើលថាមានពាក្យ "partial" ដែរឬទេ?
+        return s.status && s.status.toString().toLowerCase().includes("partial");
+    }).length;
+    
     document.getElementById("totalPartial").innerText = partialCount;
 }
 
@@ -65,13 +73,14 @@ function renderTable(data) {
     data.forEach(student => {
         const tr = document.createElement("tr");
         
-        // កំណត់ពណ៌ Status
-        let statusText = student.status ? student.status.trim() : "";
+        // កំណត់ Status សាមញ្ញ
+        let statusText = student.status ? student.status.toString() : "";
+        let statusLower = statusText.toLowerCase();
         let statusClass = "";
         
-        if(statusText.toLowerCase() === "paid") {
+        if(statusLower.includes("paid")) {
             statusClass = "status-paid";
-        } else if (statusText.toLowerCase() === "partial") {
+        } else if (statusLower.includes("partial")) {
             statusClass = "status-partial";
         }
 
@@ -84,7 +93,9 @@ function renderTable(data) {
             <td style="color:blue">${student.totalPaid}</td>
             <td style="color:red">${student.balance}</td>
             <td><span class="${statusClass}">${statusText}</span></td>
-            <td><button class="edit-btn" onclick="alert('Function under construction')"><i class="fas fa-edit"></i></button></td>
+            <td>
+                <button class="edit-btn"><i class="fas fa-edit"></i></button>
+            </td>
         `;
         tbody.appendChild(tr);
     });
@@ -137,3 +148,4 @@ function switchView(viewName) {
     const activeNav = document.getElementById('nav-' + viewName);
     if(activeNav) activeNav.classList.add('active');
 }
+
