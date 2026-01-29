@@ -1,51 +1,16 @@
-// កំណត់លេខសម្ងាត់របស់អ្នកនៅទីនេះ
-const SECRET_PASS = "admin123"; 
-
-document.addEventListener("DOMContentLoaded", () => {
-    // ពិនិត្យមើលថាតើធ្លាប់ Login ឬនៅ?
-    if(sessionStorage.getItem("isLoggedIn") === "true") {
-        document.getElementById("loginOverlay").style.display = "none";
-        loadTheme();
-        fetchData(); // ទាញទិន្នន័យតែពេល Login ត្រូវ
-    } else {
-        // បើមិនទាន់ Login ទេ កុំទាន់ទាញទិន្នន័យ
-        console.log("Please login first");
-    }
-});
-
-function checkLogin() {
-    const input = document.getElementById("adminPass").value;
-    const errorMsg = document.getElementById("loginError");
-
-    if(input === SECRET_PASS) {
-        // បើត្រូវ
-        sessionStorage.setItem("isLoggedIn", "true"); // រក្សាទុក status
-        document.getElementById("loginOverlay").style.display = "none";
-        fetchData(); // ចាប់ផ្តើមទាញទិន្នន័យ
-    } else {
-        // បើខុស
-        errorMsg.style.display = "block";
-    }
-}
-
-// មុខងារ Logout (ដាក់ក្នុងប៊ូតុងណាមួយក្នុង Sidebar)
-function logout() {
-    sessionStorage.removeItem("isLoggedIn");
-    location.reload(); // Refresh ទំព័រ
-}
-
+// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ
 const API_URL = "https://script.google.com/macros/s/AKfycbzHbeiK7LPCCTuiPkcdmf24nbiUuL0o3dxO-p-Bld-_wXaWZG4Y2BaSNK-7M1mLYRTVNw/exec";
 
 // --- Global Variables ---
-let allData = [];      // ទិន្នន័យសិស្សទាំងអស់
-let filteredData = []; // ទិន្នន័យដែលកំពុងបង្ហាញ (ក្រោយ Filter)
-let currentPage = 1;   // ទំព័របច្ចុប្បន្ន
-const rowsPerPage = 20; // ចំនួនសិស្សក្នុង ១ ទំព័រ (កែត្រង់នេះបើចង់បានតិចឬច្រើន)
-let currentUserRole = ""; // 'admin' ឬ 'viewer'
+let allData = [];      
+let filteredData = []; 
+let currentPage = 1;   
+const rowsPerPage = 20; 
+let currentUserRole = ""; 
 
 // --- 1. LOGIN & STARTUP ---
 document.addEventListener("DOMContentLoaded", () => {
-    // ពិនិត្យមើលថាតើ Login ហើយឬនៅ?
+    // ពិនិត្យ Login
     const isLogged = sessionStorage.getItem("isLoggedIn");
     const role = sessionStorage.getItem("userRole");
     const username = sessionStorage.getItem("username");
@@ -53,43 +18,43 @@ document.addEventListener("DOMContentLoaded", () => {
     if(isLogged === "true") {
         currentUserRole = role;
         document.getElementById("loginOverlay").style.display = "none";
-        document.getElementById("userInfo").innerText = `User: ${username} (${role})`;
+        document.getElementById("mainApp").style.display = "flex"; // បង្ហាញ App
+        document.getElementById("userDisplay").innerText = `${username} (${role})`;
         
         loadTheme();
-        fetchData(); // ទាញទិន្នន័យ
+        fetchData();
     } else {
-        // បើមិនទាន់ Login បង្ហាញផ្ទាំង Login
         document.getElementById("loginOverlay").style.display = "flex";
+        document.getElementById("mainApp").style.display = "none";
     }
 
     // Event Listeners
     document.getElementById("searchInput").addEventListener("input", filterData);
     document.getElementById("classFilter").addEventListener("change", filterData);
     document.getElementById("themeSwitch").addEventListener("change", (e) => toggleTheme(e.target.checked));
+    
+    // ចុច Enter ដើម្បី Login
+    document.getElementById("loginPass").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") { handleLogin(); }
+    });
 });
 
-function checkLogin() {
+function handleLogin() {
     const u = document.getElementById("loginUser").value.trim();
     const p = document.getElementById("loginPass").value.trim();
     const err = document.getElementById("loginError");
 
-    // កំណត់ User និង Password (Hardcoded សម្រាប់ការសាកល្បង)
-    // អ្នកអាចបន្ថែម User ទៀតនៅទីនេះ
     const users = {
-        "admin": { pass: "123", role: "admin" }, // កែបាន
-        "staff": { pass: "123", role: "viewer" } // មើលបានតែប៉ុណ្ណោះ
+        "admin": { pass: "123", role: "admin" }, 
+        "staff": { pass: "123", role: "viewer" } 
     };
 
     if (users[u] && users[u].pass === p) {
-        // Login ជោគជ័យ
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("userRole", users[u].role);
         sessionStorage.setItem("username", u);
-        
-        // Reload ដើម្បីចូលផ្ទាំងដើម
         location.reload(); 
     } else {
-        // Login បរាជ័យ
         err.style.display = "block";
     }
 }
@@ -107,24 +72,21 @@ async function fetchData() {
         const res = await fetch(API_URL);
         const data = await res.json();
         
-        // Remove duplicates
         const unique = new Map();
         data.forEach(item => { if(item.id) unique.set(item.id, item); });
         allData = Array.from(unique.values());
         
-        // ចាប់ផ្តើមដោយបង្ហាញទិន្នន័យទាំងអស់
         filteredData = [...allData]; 
 
         setupDropdown(allData);
         updateDashboard(allData);
         
-        // Render ជាមួយ Pagination
         currentPage = 1;
         renderPagination();
 
     } catch (err) {
         console.error(err);
-        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">បរាជ័យក្នុងការទាញទិន្នន័យ</td></tr>`;
+        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">បរាជ័យក្នុងការទាញទិន្នន័យ (សូមពិនិត្យ URL)</td></tr>`;
     }
 }
 
@@ -133,14 +95,10 @@ function renderPagination() {
     const tbody = document.getElementById("studentTableBody");
     tbody.innerHTML = "";
 
-    // គណនាចំនួនទំព័រសរុប
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-    
-    // ការពារកុំឱ្យ currentPage លើស
     if (currentPage < 1) currentPage = 1;
     if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
 
-    // កាត់ទិន្នន័យតាមទំព័រ (Slice)
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     const pageData = filteredData.slice(start, end);
@@ -151,16 +109,14 @@ function renderPagination() {
         return;
     }
 
-    // Render ជួរតារាង
     pageData.forEach(student => {
         let statusClass = student.status && student.status.toLowerCase().includes("paid") ? "status-paid" : "status-partial";
         
-        // Role Logic: បើជា admin បង្ហាញប៊ូតុង Edit, បើ viewer មិនបង្ហាញ
         let actionButton = "";
         if (currentUserRole === "admin") {
             actionButton = `<button class="edit-btn" onclick="openEdit('${student.id}')"><i class="fas fa-edit"></i></button>`;
         } else {
-            actionButton = `<span style="color:#ccc; font-size:12px;"><i class="fas fa-lock"></i> Read Only</span>`;
+            actionButton = `<span style="color:#aaa; font-size:12px;"><i class="fas fa-lock"></i> View Only</span>`;
         }
 
         const tr = document.createElement("tr");
@@ -177,7 +133,6 @@ function renderPagination() {
         tbody.appendChild(tr);
     });
 
-    // Update ប៊ូតុង Next/Prev
     document.getElementById("pageIndicator").innerText = `Page ${currentPage} of ${totalPages}`;
     document.getElementById("btnPrev").disabled = (currentPage === 1);
     document.getElementById("btnNext").disabled = (currentPage === totalPages || totalPages === 0);
@@ -188,7 +143,7 @@ function changePage(step) {
     renderPagination();
 }
 
-// --- 4. FILTERING ---
+// --- 4. FILTERING & DASHBOARD ---
 function filterData() {
     const search = document.getElementById("searchInput").value.toLowerCase();
     const cls = document.getElementById("classFilter").value;
@@ -199,60 +154,32 @@ function filterData() {
         return matchSearch && matchClass;
     });
     
-    // Update Dashboard តាម Filter
     updateDashboard(filteredData);
-    
-    // Reset ទៅទំព័រទី ១ វិញពេល Filter
     currentPage = 1;
     renderPagination();
 }
 
-// ... (Code ផ្សេងៗដូចជា setupDropdown, updateDashboard, openEdit, editForm submit, Utilities រក្សាទុកដដែល) ...
-// សូមចម្លងកូដ edit logic, parseCurrency, formatCurrency ពី script ចាស់មកដាក់បន្តនៅខាងក្រោមនេះ
-// (កុំភ្លេចដាក់កូដ editForm ឱ្យដំណើរការតែពេល role === 'admin' ក្នុង backend ផងបើអាច ប៉ុន្តែក្នុង frontend យើងបិទប៊ូតុងហើយ)
-
-// --- កូដជំនួយពីផ្នែកមុន (សង្ខេប) ---
 function updateDashboard(data) {
     document.getElementById("totalStudents").innerText = data.length;
-    // ... (កូដគណនាលុយដដែល) ...
-    // កុំភ្លេចដាក់កូដគណនាដូចមុន
+    document.getElementById("totalPaidStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("paid")).length;
+    document.getElementById("totalPartialStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("partial")).length;
+
+    let sumFee = 0, sumFirst = 0, sumSecond = 0;
+    data.forEach(s => {
+        sumFee += parseCurrency(s.schoolFee);
+        sumFirst += parseCurrency(s.firstPayment);
+        sumSecond += parseCurrency(s.secondPayment);
+    });
+
+    document.getElementById("totalSchoolFee").innerText = formatCurrency(sumFee);
+    document.getElementById("totalFirstPay").innerText = formatCurrency(sumFirst);
+    document.getElementById("totalSecondPay").innerText = formatCurrency(sumSecond);
 }
 
-function setupDropdown(data) {
-    const classes = [...new Set(data.map(d => d.classRoom))].sort();
-    const sel = document.getElementById("classFilter");
-    sel.innerHTML = '<option value="all">ថ្នាក់ទាំងអស់</option>';
-    classes.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
-}
-
-// Edit Logic (ដាក់ដដែល)
+// --- 5. EDIT & UTILS ---
 function openEdit(id) {
-    // ... copy ពីកូដចាស់ ...
-    // បន្ថែម: ការពារសុវត្ថិភាពម្តងទៀត
-    if(currentUserRole !== 'admin') {
-        alert("អ្នកមិនមានសិទ្ធិកែប្រែទេ!");
-        return;
-    }
-    // ...
-}
-// ... (closeModal, calculateTotal, editForm Listener, parseCurrency, formatCurrency, switchView, toggleTheme, loadTheme - COPY ពីកូដចាស់មកដាក់) ...
+    if(currentUserRole !== 'admin') { alert("គ្មានសិទ្ធិ!"); return; }
     
-    // Update Dashboard តាម Filter
-    updateDashboard(filteredData);
-    
-    // Reset ទៅទំព័រទី ១ វិញពេល Filter
-    currentPage = 1;
-    renderPagination();
-}
-function setupDropdown(data) {
-    const classes = [...new Set(data.map(d => d.classRoom))].sort();
-    const sel = document.getElementById("classFilter");
-    sel.innerHTML = '<option value="all">ថ្នាក់ទាំងអស់</option>';
-    classes.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
-}
-
-// Edit Logic
-function openEdit(id) {
     const student = allData.find(s => s.id === id);
     if(!student) return;
 
@@ -299,7 +226,13 @@ document.getElementById("editForm").addEventListener("submit", async (e) => {
     finally { btn.innerText = oldText; btn.disabled = false; }
 });
 
-// Utilities
+function setupDropdown(data) {
+    const classes = [...new Set(data.map(d => d.classRoom))].sort();
+    const sel = document.getElementById("classFilter");
+    sel.innerHTML = '<option value="all">ថ្នាក់ទាំងអស់</option>';
+    classes.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
+}
+
 function parseCurrency(str) { return parseFloat((str || "0").toString().replace(/[^0-9.]/g, '')) || 0; }
 function formatCurrency(num) { return num.toLocaleString('en-US') + " KHR"; }
 
@@ -323,6 +256,3 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
-
-
-
