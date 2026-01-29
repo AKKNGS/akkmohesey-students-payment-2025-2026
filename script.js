@@ -1,18 +1,17 @@
-// ជំនួសកន្លែងនេះដោយ Web App URL ដែលអ្នកបានពី Apps Script
+// ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ បន្ទាប់ពី Deploy ម្តងទៀត
 const API_URL = "https://script.google.com/macros/s/AKfycbzHbeiK7LPCCTuiPkcdmf24nbiUuL0o3dxO-p-Bld-_wXaWZG4Y2BaSNK-7M1mLYRTVNw/exec";
 
 let allStudents = [];
 
-// ដំណើរការពេលបើក Website
 document.addEventListener("DOMContentLoaded", () => {
     fetchData();
     
-    // Search listener
+    // Search Listener
     document.getElementById("searchInput").addEventListener("input", (e) => {
         filterData(e.target.value, document.getElementById("classFilter").value);
     });
 
-    // Class Filter listener
+    // Class Filter Listener
     document.getElementById("classFilter").addEventListener("change", (e) => {
         filterData(document.getElementById("searchInput").value, e.target.value);
     });
@@ -21,47 +20,37 @@ document.addEventListener("DOMContentLoaded", () => {
 async function fetchData() {
     try {
         const response = await fetch(API_URL);
-        const rawData = await response.json();
-
-        // --- កូដថ្មី៖ ច្រោះយកតែ ID មិនស្ទួន (Remove Duplicates) ---
-        // បើមាន ID ដូចគ្នា វាបូកបញ្ចូលតែមួយ
-        const uniqueDataMap = new Map();
-        rawData.forEach(student => {
-            if (student.id && student.id !== "") {
-                uniqueDataMap.set(student.id, student);
-            }
-        });
-        const uniqueData = Array.from(uniqueDataMap.values());
+        const data = await response.json();
         
-        allStudents = uniqueData; // ប្រើទិន្នន័យដែលច្រោះរួច
-        // ----------------------------------------------------
-
-        setupClassFilter(allStudents);
-        updateDashboard(allStudents);
-        renderTable(allStudents);
+        allStudents = data;
+        
+        // Setup dropdown ថ្នាក់
+        setupClassFilter(data);
+        
+        // បង្ហាញទិន្នន័យ
+        updateDashboard(data);
+        renderTable(data);
         
     } catch (error) {
         console.error("Error fetching data:", error);
-        // ... error handling
+        document.getElementById("studentTableBody").innerHTML = 
+            `<tr><td colspan="9" style="color:red; text-align:center;">
+                បរាជ័យក្នុងការទាញទិន្នន័យ! សូមពិនិត្យមើល URL ឬ Internet របស់អ្នក។
+            </td></tr>`;
     }
 }
 
-function setupClassFilter(data) {
-    const classes = [...new Set(data.map(item => item.sheetName))]; // យកឈ្មោះថ្នាក់ដែលមិនស្ទួន
-    const select = document.getElementById("classFilter");
-    
-    classes.sort().forEach(cls => {
-        const option = document.createElement("option");
-        option.value = cls;
-        option.innerText = cls;
-        select.appendChild(option);
-    });
-}
-
 function updateDashboard(data) {
+    // 1. បង្ហាញចំនួនសិស្សសរុប
     document.getElementById("totalStudents").innerText = data.length;
-    document.getElementById("totalPaid").innerText = data.filter(s => s.status === "Paid").length;
-    document.getElementById("totalPartial").innerText = data.filter(s => s.status === "Partial").length;
+
+    // 2. រាប់ចំនួន Paid (ប្រើ toLowerCase និង trim ដើម្បីកុំឱ្យខុសដោយសារដកឃ្លា)
+    const paidCount = data.filter(s => s.status && s.status.trim().toLowerCase() === "paid").length;
+    document.getElementById("totalPaid").innerText = paidCount;
+
+    // 3. រាប់ចំនួន Partial
+    const partialCount = data.filter(s => s.status && s.status.trim().toLowerCase() === "partial").length;
+    document.getElementById("totalPartial").innerText = partialCount;
 }
 
 function renderTable(data) {
@@ -76,9 +65,16 @@ function renderTable(data) {
     data.forEach(student => {
         const tr = document.createElement("tr");
         
-        // ពិនិត្យ Status ដើម្បីដាក់ពណ៌
-        let statusClass = student.status === "Paid" ? "status-paid" : "status-partial";
+        // កំណត់ពណ៌ Status
+        let statusText = student.status ? student.status.trim() : "";
+        let statusClass = "";
         
+        if(statusText.toLowerCase() === "paid") {
+            statusClass = "status-paid";
+        } else if (statusText.toLowerCase() === "partial") {
+            statusClass = "status-partial";
+        }
+
         tr.innerHTML = `
             <td>${student.id}</td>
             <td style="font-weight:bold;">${student.name}</td>
@@ -87,47 +83,57 @@ function renderTable(data) {
             <td>${student.schoolFee}</td>
             <td style="color:blue">${student.totalPaid}</td>
             <td style="color:red">${student.balance}</td>
-            <td><span class="${statusClass}">${student.status}</span></td>
-            <td><button class="edit-btn" onclick="editStudent('${student.id}')"><i class="fas fa-edit"></i></button></td>
+            <td><span class="${statusClass}">${statusText}</span></td>
+            <td><button class="edit-btn" onclick="alert('Function under construction')"><i class="fas fa-edit"></i></button></td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+function setupClassFilter(data) {
+    // យកឈ្មោះថ្នាក់ពីទិន្នន័យជាក់ស្តែង
+    const classes = [...new Set(data.map(item => item.classRoom))]; 
+    const select = document.getElementById("classFilter");
+    
+    // លុប Options ចាស់ចោល (ទុកតែ "All")
+    select.innerHTML = '<option value="all">ថ្នាក់ទាំងអស់ (All Classes)</option>';
+
+    classes.sort().forEach(cls => {
+        if(cls){ // ការពារកុំឱ្យយកថ្នាក់ទទេ
+            const option = document.createElement("option");
+            option.value = cls;
+            option.innerText = cls;
+            select.appendChild(option);
+        }
+    });
+}
+
 function filterData(searchTerm, classFilter) {
     const filtered = allStudents.filter(student => {
-        const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              student.id.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesClass = classFilter === "all" || student.sheetName === classFilter;
+        const matchesSearch = (student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase())) || 
+                              (student.id && student.id.toLowerCase().includes(searchTerm.toLowerCase()));
+        const matchesClass = classFilter === "all" || student.classRoom === classFilter;
         
         return matchesSearch && matchesClass;
     });
     renderTable(filtered);
-    updateDashboard(filtered);
+    updateDashboard(filtered); // Update លេខ Dashboard ពេល Filter ដែរ
 }
 
-function editStudent(id) {
-    alert("មុខងារកែប្រែនឹងត្រូវបន្ថែមនៅពេលក្រោយសម្រាប់ ID: " + id);
-    // នៅត្រង់នេះ អ្នកអាចបង្កើត Popup Modal ដើម្បីបញ្ចូលលុយ ហើយហៅទៅ function doPost ក្នុង Apps Script
-
-}
-
+// Function សម្រាប់ប្តូរផ្ទាំង (ដូចការស្នើសុំមុន)
 function switchView(viewName) {
-    // 1. លាក់គ្រប់ Section ទាំងអស់
-    document.getElementById('view-dashboard').style.display = 'none';
-    document.getElementById('view-students').style.display = 'none';
-    document.getElementById('view-payments').style.display = 'none';
-    document.getElementById('view-settings').style.display = 'none';
+    const sections = ['dashboard', 'students', 'payments', 'settings'];
+    sections.forEach(sec => {
+        const el = document.getElementById('view-' + sec);
+        if(el) el.style.display = 'none';
+        
+        const nav = document.getElementById('nav-' + sec);
+        if(nav) nav.classList.remove('active');
+    });
 
-    // 2. បង្ហាញតែ Section ដែលបានជ្រើសរើស
-    document.getElementById('view-' + viewName).style.display = 'block';
-
-    // 3. Update ពណ៌លើ Menu (Active Class)
-    // ដក class 'active' ពីគ្រប់ menu
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => item.classList.remove('active'));
-
-    // ដាក់ class 'active' លើ menu ដែលកំពុងចុច
-    document.getElementById('nav-' + viewName).classList.add('active');
+    const activeEl = document.getElementById('view-' + viewName);
+    if(activeEl) activeEl.style.display = 'block';
+    
+    const activeNav = document.getElementById('nav-' + viewName);
+    if(activeNav) activeNav.classList.add('active');
 }
-
