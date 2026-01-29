@@ -7,7 +7,6 @@
     --shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-/* Dark Mode Colors */
 [data-theme="dark"] {
     --bg-color: #1a1a2e;
     --card-bg: #16213e;
@@ -16,230 +15,85 @@
     --shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-* {
-    box-sizing: border-box; /* សំខាន់ណាស់សម្រាប់ការពារការបាំង */
-}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Poppins', 'Battambang', sans-serif; background: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
-body {
-    margin: 0;
-    font-family: 'Poppins', 'Battambang', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    display: flex;
-    height: 100vh; /* ពេញអេក្រង់ */
-    overflow: hidden; /* មិនឱ្យ Scroll Body */
+/* === LOGIN OVERLAY === */
+#loginOverlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #1a1a2e; z-index: 9999;
+    display: flex; justify-content: center; align-items: center;
 }
+.login-box {
+    background: white; padding: 40px; border-radius: 15px; width: 350px; text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.login-box h2 { color: #4a90e2; margin-top: 0; }
+.input-group {
+    display: flex; align-items: center; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-bottom: 15px;
+}
+.input-group i { color: #888; margin-right: 10px; width: 20px; }
+.input-group input { border: none; outline: none; width: 100%; font-size: 16px; }
+.login-btn {
+    width: 100%; padding: 12px; background: #4a90e2; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.3s;
+}
+.login-btn:hover { background: #357abd; }
+#loginError { color: red; margin-top: 10px; display: none; font-size: 14px; }
+.login-note { margin-top: 20px; font-size: 12px; color: #666; text-align: left; background: #f9f9f9; padding: 10px; border-radius: 5px; }
 
-/* === SIDEBAR (ឆ្វេង) === */
+/* === MAIN LAYOUT === */
+.container { display: flex; width: 100%; height: 100%; }
+
+/* Sidebar */
 .sidebar {
-    width: 260px;
-    background-color: var(--card-bg);
-    padding: 20px;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0; /* ហាមរួញទោះអេក្រង់តូច */
-    z-index: 10;
+    width: 260px; background: var(--card-bg); padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; flex-shrink: 0;
 }
+.sidebar .logo h2 { color: var(--primary); margin-bottom: 30px; }
+.nav-item { padding: 15px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; color: var(--text-sec); display: flex; align-items: center; transition: 0.3s; }
+.nav-item:hover, .nav-item.active { background: var(--primary); color: #fff; }
+.nav-item i { margin-right: 15px; width: 25px; text-align: center; }
+.logout-section { margin-top: auto; border-top: 1px solid #eee; padding-top: 10px; }
+.logout-btn { color: #e74c3c !important; }
+.logout-btn:hover { background: #e74c3c !important; color: white !important; }
 
-.sidebar .logo h2 { 
-    color: var(--primary); 
-    margin-bottom: 40px; 
-    font-size: 22px;
-}
+/* Main Content */
+.main-content { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
 
-.sidebar ul {
-    list-style: none; /* លុបគ្រាប់ Bullet ចោល */
-    padding: 0;
-}
-
-.nav-item {
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    color: var(--text-sec);
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-}
-
-.nav-item:hover, .nav-item.active {
-    background-color: var(--primary);
-    color: #fff;
-}
-
-.nav-item i { 
-    margin-right: 15px; 
-    width: 25px; 
-    text-align: center;
-}
-
-/* === MAIN CONTENT (ស្តាំ) === */
-.main-content {
-    flex: 1; /* យកផ្ទៃដែលនៅសល់ទាំងអស់ */
-    padding: 30px;
-    overflow-y: auto; /* Scroll តែត្រង់នេះ */
-    position: relative;
-}
-
-header {
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-header h1 { margin: 0; font-size: 24px; }
-
-/* === CARDS GRID (សំខាន់បំផុត - កែបញ្ហាត្រួតគ្នា) === */
+/* Cards Grid */
 .cards-grid {
-    display: grid;
-    /* បង្ខំឱ្យចែកជា ៣ ជួរឈរស្មើៗគ្នា */
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 25px; /* ចន្លោះរវាងកាត */
-    margin-bottom: 30px;
-    width: 100%;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px;
 }
-
-/* សម្រាប់អេក្រង់ Laptop តូច ឬ Tablet (ប្តូរមក ២ ជួរ) */
-@media (max-width: 1024px) {
-    .cards-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* សម្រាប់ទូរស័ព្ទ (ប្តូរមក ១ ជួរ) */
-@media (max-width: 768px) {
-    .cards-grid {
-        grid-template-columns: 1fr;
-    }
-    .sidebar {
-        display: none; /* អាចបន្ថែមប៊ូតុង Menu ពេលក្រោយ */
-    }
-}
+@media (max-width: 1024px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; } .sidebar { display: none; } }
 
 .card {
-    background: var(--card-bg);
-    padding: 25px;
-    border-radius: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: var(--shadow);
-    min-height: 120px; /* កម្ពស់អប្បបរមា */
+    background: var(--card-bg); padding: 25px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow);
 }
+.card-info h3 { font-size: 14px; color: var(--text-sec); margin: 0 0 10px 0; }
+.card-info h2 { font-size: 22px; margin: 0; font-weight: 700; }
+.card-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; flex-shrink: 0; }
 
-.card-info h3 { 
-    font-size: 14px; 
-    color: var(--text-sec); 
-    margin: 0 0 10px 0;
-}
-.card-info h2 { 
-    font-size: 22px; 
-    margin: 0; 
-    font-weight: 700;
-}
+.blue { background: #3498db; } .green { background: #2ecc71; } .orange { background: #f1c40f; } .purple { background: #9b59b6; } .teal { background: #1abc9c; } .red { background: #e74c3c; }
 
-.card-icon {
-    width: 50px; height: 50px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 20px;
-    flex-shrink: 0; /* ហាមរូប Icon រួញ */
-}
-
-/* Colors */
-.blue { background: #3498db; }
-.green { background: #2ecc71; }
-.orange { background: #f1c40f; }
-.purple { background: #9b59b6; }
-.teal { background: #1abc9c; }
-.red { background: #e74c3c; }
-
-/* === TABLE === */
-.table-container {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: var(--shadow);
-    overflow-x: auto; /* Scroll ឆ្វេងស្តាំបើតារាងវែង */
-}
-
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    min-width: 900px; /* ធានាតារាងមិនបែកពេលអេក្រង់តូច */
-}
-
-th, td { 
-    padding: 15px; 
-    text-align: left; 
-    border-bottom: 1px solid #eee; 
-    white-space: nowrap; /* ហាមអក្សរចុះបន្ទាត់ក្នុងតារាង */
-}
-
+/* Table */
+.table-container { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: var(--shadow); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; white-space: nowrap; }
 [data-theme="dark"] th, [data-theme="dark"] td { border-bottom: 1px solid #333; }
 
-/* Status Badges */
 .status-paid { color: #2ecc71; background: rgba(46, 204, 113, 0.1); padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 12px; }
 .status-partial { color: #f1c40f; background: rgba(241, 196, 15, 0.1); padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 12px; }
 
-/* Buttons & Inputs */
-.search-box {
-    background: var(--card-bg);
-    padding: 10px 15px;
-    border-radius: 20px;
-    border: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-}
-.search-box input { border: none; outline: none; margin-left: 10px; background: transparent; color: var(--text-main); }
-.edit-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+/* Pagination */
+.pagination-container { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 15px; }
+.pagination-container button { padding: 8px 16px; background: var(--card-bg); border: 1px solid #ddd; border-radius: 5px; cursor: pointer; color: var(--text-main); font-weight: bold; transition: 0.3s; }
+.pagination-container button:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; background: #ccc; }
 
-/* Modal */
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow: auto;}
+/* Modal & Form */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
 .modal-content { background: var(--card-bg); margin: 5% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; position: relative; }
 .form-group { margin-bottom: 15px; }
-.form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--card-bg); color: var(--text-main);}
+.form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--card-bg); color: var(--text-main); }
 .save-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-
-/* បន្ថែមនៅខាងក្រោមគេនៃ file style.css */
-
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-    gap: 15px;
-}
-
-.pagination-container button {
-    padding: 8px 16px;
-    background: var(--card-bg);
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    cursor: pointer;
-    color: var(--text-main);
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.pagination-container button:hover {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-.pagination-container button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: #ccc;
-}
-
-#pageIndicator {
-    font-weight: bold;
-    color: var(--text-sec);
-}
+.edit-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
