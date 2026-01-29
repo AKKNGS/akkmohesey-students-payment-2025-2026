@@ -1,3 +1,39 @@
+// កំណត់លេខសម្ងាត់របស់អ្នកនៅទីនេះ
+const SECRET_PASS = "admin123"; 
+
+document.addEventListener("DOMContentLoaded", () => {
+    // ពិនិត្យមើលថាតើធ្លាប់ Login ឬនៅ?
+    if(sessionStorage.getItem("isLoggedIn") === "true") {
+        document.getElementById("loginOverlay").style.display = "none";
+        loadTheme();
+        fetchData(); // ទាញទិន្នន័យតែពេល Login ត្រូវ
+    } else {
+        // បើមិនទាន់ Login ទេ កុំទាន់ទាញទិន្នន័យ
+        console.log("Please login first");
+    }
+});
+
+function checkLogin() {
+    const input = document.getElementById("adminPass").value;
+    const errorMsg = document.getElementById("loginError");
+
+    if(input === SECRET_PASS) {
+        // បើត្រូវ
+        sessionStorage.setItem("isLoggedIn", "true"); // រក្សាទុក status
+        document.getElementById("loginOverlay").style.display = "none";
+        fetchData(); // ចាប់ផ្តើមទាញទិន្នន័យ
+    } else {
+        // បើខុស
+        errorMsg.style.display = "block";
+    }
+}
+
+// មុខងារ Logout (ដាក់ក្នុងប៊ូតុងណាមួយក្នុង Sidebar)
+function logout() {
+    sessionStorage.removeItem("isLoggedIn");
+    location.reload(); // Refresh ទំព័រ
+}
+
 // 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ (ត្រូវ Deploy New Version ក្នុង Apps Script ជាមុនសិន)
 const API_URL = "https://script.google.com/macros/s/AKfycbzHbeiK7LPCCTuiPkcdmf24nbiUuL0o3dxO-p-Bld-_wXaWZG4Y2BaSNK-7M1mLYRTVNw/exec";
 
@@ -171,3 +207,4 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
