@@ -34,71 +34,135 @@ function logout() {
     location.reload(); // Refresh ទំព័រ
 }
 
-// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ (ត្រូវ Deploy New Version ក្នុង Apps Script ជាមុនសិន)
 const API_URL = "https://script.google.com/macros/s/AKfycbzHbeiK7LPCCTuiPkcdmf24nbiUuL0o3dxO-p-Bld-_wXaWZG4Y2BaSNK-7M1mLYRTVNw/exec";
 
-let allData = [];
+// --- Global Variables ---
+let allData = [];      // ទិន្នន័យសិស្សទាំងអស់
+let filteredData = []; // ទិន្នន័យដែលកំពុងបង្ហាញ (ក្រោយ Filter)
+let currentPage = 1;   // ទំព័របច្ចុប្បន្ន
+const rowsPerPage = 20; // ចំនួនសិស្សក្នុង ១ ទំព័រ (កែត្រង់នេះបើចង់បានតិចឬច្រើន)
+let currentUserRole = ""; // 'admin' ឬ 'viewer'
 
+// --- 1. LOGIN & STARTUP ---
 document.addEventListener("DOMContentLoaded", () => {
-    loadTheme();
-    fetchData();
+    // ពិនិត្យមើលថាតើ Login ហើយឬនៅ?
+    const isLogged = sessionStorage.getItem("isLoggedIn");
+    const role = sessionStorage.getItem("userRole");
+    const username = sessionStorage.getItem("username");
 
+    if(isLogged === "true") {
+        currentUserRole = role;
+        document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("userInfo").innerText = `User: ${username} (${role})`;
+        
+        loadTheme();
+        fetchData(); // ទាញទិន្នន័យ
+    } else {
+        // បើមិនទាន់ Login បង្ហាញផ្ទាំង Login
+        document.getElementById("loginOverlay").style.display = "flex";
+    }
+
+    // Event Listeners
     document.getElementById("searchInput").addEventListener("input", filterData);
     document.getElementById("classFilter").addEventListener("change", filterData);
     document.getElementById("themeSwitch").addEventListener("change", (e) => toggleTheme(e.target.checked));
 });
 
+function checkLogin() {
+    const u = document.getElementById("loginUser").value.trim();
+    const p = document.getElementById("loginPass").value.trim();
+    const err = document.getElementById("loginError");
+
+    // កំណត់ User និង Password (Hardcoded សម្រាប់ការសាកល្បង)
+    // អ្នកអាចបន្ថែម User ទៀតនៅទីនេះ
+    const users = {
+        "admin": { pass: "123", role: "admin" }, // កែបាន
+        "staff": { pass: "123", role: "viewer" } // មើលបានតែប៉ុណ្ណោះ
+    };
+
+    if (users[u] && users[u].pass === p) {
+        // Login ជោគជ័យ
+        sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("userRole", users[u].role);
+        sessionStorage.setItem("username", u);
+        
+        // Reload ដើម្បីចូលផ្ទាំងដើម
+        location.reload(); 
+    } else {
+        // Login បរាជ័យ
+        err.style.display = "block";
+    }
+}
+
+function logout() {
+    if(confirm("តើអ្នកពិតជាចង់ចាកចេញមែនទេ?")) {
+        sessionStorage.clear();
+        location.reload();
+    }
+}
+
+// --- 2. DATA FETCHING ---
 async function fetchData() {
     try {
         const res = await fetch(API_URL);
         const data = await res.json();
         
-        // Remove duplicates based on ID
+        // Remove duplicates
         const unique = new Map();
         data.forEach(item => { if(item.id) unique.set(item.id, item); });
         allData = Array.from(unique.values());
+        
+        // ចាប់ផ្តើមដោយបង្ហាញទិន្នន័យទាំងអស់
+        filteredData = [...allData]; 
 
         setupDropdown(allData);
         updateDashboard(allData);
-        renderTable(allData);
+        
+        // Render ជាមួយ Pagination
+        currentPage = 1;
+        renderPagination();
+
     } catch (err) {
         console.error(err);
         document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">បរាជ័យក្នុងការទាញទិន្នន័យ</td></tr>`;
     }
 }
 
-function updateDashboard(data) {
-    document.getElementById("totalStudents").innerText = data.length;
-    
-    // Count Status (Case insensitive check)
-    document.getElementById("totalPaidStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("paid")).length;
-    document.getElementById("totalPartialStatus").innerText = data.filter(s => s.status && s.status.toLowerCase().includes("partial")).length;
-
-    // Sum Financials
-    let sumFee = 0, sumFirst = 0, sumSecond = 0;
-    data.forEach(s => {
-        sumFee += parseCurrency(s.schoolFee);
-        sumFirst += parseCurrency(s.firstPayment);
-        sumSecond += parseCurrency(s.secondPayment);
-    });
-
-    document.getElementById("totalSchoolFee").innerText = formatCurrency(sumFee);
-    document.getElementById("totalFirstPay").innerText = formatCurrency(sumFirst);
-    document.getElementById("totalSecondPay").innerText = formatCurrency(sumSecond);
-}
-
-function renderTable(data) {
+// --- 3. PAGINATION & RENDER TABLE ---
+function renderPagination() {
     const tbody = document.getElementById("studentTableBody");
     tbody.innerHTML = "";
+
+    // គណនាចំនួនទំព័រសរុប
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     
-    if (data.length === 0) {
+    // ការពារកុំឱ្យ currentPage លើស
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+
+    // កាត់ទិន្នន័យតាមទំព័រ (Slice)
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageData = filteredData.slice(start, end);
+
+    if (pageData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">រកមិនឃើញទិន្នន័យ</td></tr>`;
+        document.getElementById("pageIndicator").innerText = "Page 0 of 0";
         return;
     }
 
-    data.slice(0, 100).forEach(student => { // Show first 100 to avoid lag
+    // Render ជួរតារាង
+    pageData.forEach(student => {
         let statusClass = student.status && student.status.toLowerCase().includes("paid") ? "status-paid" : "status-partial";
         
+        // Role Logic: បើជា admin បង្ហាញប៊ូតុង Edit, បើ viewer មិនបង្ហាញ
+        let actionButton = "";
+        if (currentUserRole === "admin") {
+            actionButton = `<button class="edit-btn" onclick="openEdit('${student.id}')"><i class="fas fa-edit"></i></button>`;
+        } else {
+            actionButton = `<span style="color:#ccc; font-size:12px;"><i class="fas fa-lock"></i> Read Only</span>`;
+        }
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${student.id}</td>
@@ -108,26 +172,40 @@ function renderTable(data) {
             <td style="color:blue">${student.totalPaid}</td>
             <td style="color:red">${student.balance}</td>
             <td><span class="${statusClass}">${student.status}</span></td>
-            <td><button class="edit-btn" onclick="openEdit('${student.id}')"><i class="fas fa-edit"></i></button></td>
+            <td>${actionButton}</td>
         `;
         tbody.appendChild(tr);
     });
+
+    // Update ប៊ូតុង Next/Prev
+    document.getElementById("pageIndicator").innerText = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById("btnPrev").disabled = (currentPage === 1);
+    document.getElementById("btnNext").disabled = (currentPage === totalPages || totalPages === 0);
 }
 
+function changePage(step) {
+    currentPage += step;
+    renderPagination();
+}
+
+// --- 4. FILTERING ---
 function filterData() {
     const search = document.getElementById("searchInput").value.toLowerCase();
     const cls = document.getElementById("classFilter").value;
 
-    const filtered = allData.filter(s => {
+    filteredData = allData.filter(s => {
         const matchSearch = (s.name && s.name.toLowerCase().includes(search)) || (s.id && s.id.toLowerCase().includes(search));
         const matchClass = cls === "all" || s.classRoom === cls;
         return matchSearch && matchClass;
     });
     
-    renderTable(filtered);
-    updateDashboard(filtered);
+    // Update Dashboard តាម Filter
+    updateDashboard(filteredData);
+    
+    // Reset ទៅទំព័រទី ១ វិញពេល Filter
+    currentPage = 1;
+    renderPagination();
 }
-
 function setupDropdown(data) {
     const classes = [...new Set(data.map(d => d.classRoom))].sort();
     const sel = document.getElementById("classFilter");
@@ -207,4 +285,5 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
 
