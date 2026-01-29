@@ -21,15 +21,28 @@ document.addEventListener("DOMContentLoaded", () => {
 async function fetchData() {
     try {
         const response = await fetch(API_URL);
-        const data = await response.json();
-        allStudents = data;
+        const rawData = await response.json();
+
+        // --- កូដថ្មី៖ ច្រោះយកតែ ID មិនស្ទួន (Remove Duplicates) ---
+        // បើមាន ID ដូចគ្នា វាបូកបញ្ចូលតែមួយ
+        const uniqueDataMap = new Map();
+        rawData.forEach(student => {
+            if (student.id && student.id !== "") {
+                uniqueDataMap.set(student.id, student);
+            }
+        });
+        const uniqueData = Array.from(uniqueDataMap.values());
         
-        setupClassFilter(data);
-        updateDashboard(data);
-        renderTable(data);
+        allStudents = uniqueData; // ប្រើទិន្នន័យដែលច្រោះរួច
+        // ----------------------------------------------------
+
+        setupClassFilter(allStudents);
+        updateDashboard(allStudents);
+        renderTable(allStudents);
+        
     } catch (error) {
         console.error("Error fetching data:", error);
-        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="9" style="color:red; text-align:center;">បរាជ័យក្នុងការទាញទិន្នន័យ</td></tr>`;
+        // ... error handling
     }
 }
 
@@ -96,4 +109,5 @@ function filterData(searchTerm, classFilter) {
 function editStudent(id) {
     alert("មុខងារកែប្រែនឹងត្រូវបន្ថែមនៅពេលក្រោយសម្រាប់ ID: " + id);
     // នៅត្រង់នេះ អ្នកអាចបង្កើត Popup Modal ដើម្បីបញ្ចូលលុយ ហើយហៅទៅ function doPost ក្នុង Apps Script
+
 }
