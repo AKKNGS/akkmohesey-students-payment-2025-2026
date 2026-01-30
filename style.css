@@ -382,3 +382,131 @@ tr:hover td { background-color: #f8f9fa; }
     .thank-you { text-align: center; margin-top: 40px; font-style: italic; font-weight: bold; }
     .footer-note { text-align: center; font-size: 10px; margin-top: 10px; color: #666; }
 }
+
+/* =========================================
+   MOBILE RESPONSIVE & FLOATING DESIGN
+   ========================================= */
+
+/* លាក់ Mobile Nav នៅលើកុំព្យូទ័រ */
+.mobile-nav { display: none; }
+
+/* ចាប់ផ្តើមរចនាសម្រាប់ទូរស័ព្ទ (អេក្រង់តូចជាង 768px) */
+@media (max-width: 768px) {
+    
+    /* 1. លាក់ Sidebar ចាស់ */
+    .sidebar { display: none; }
+
+    /* 2. រៀបចំ Main Content */
+    .main-content {
+        padding: 20px 15px 100px 15px; /* ទុកចន្លោះខាងក្រោមសម្រាប់ Menu */
+        width: 100%;
+    }
+
+    /* 3. FLOATING BOTTOM NAVIGATION (Menu អណ្ដែត) */
+    .mobile-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 400px;
+        background: rgba(255, 255, 255, 0.85); /* ពណ៌សថ្លា */
+        backdrop-filter: blur(12px); /* ធ្វើឱ្យព្រាលខាងក្រោយ (Glassmorphism) */
+        padding: 10px 20px;
+        border-radius: 25px; /* មូលជ្រុងខ្លាំង */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* ស្រមោលអណ្ដែត */
+        z-index: 999;
+        border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .mobile-nav .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .mobile-nav .nav-item .icon-container {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px;
+        margin-bottom: 4px;
+        transition: 0.3s;
+    }
+
+    /* Active State (ពេលចុច) */
+    .mobile-nav .nav-item.active { color: var(--primary); }
+    .mobile-nav .nav-item.active .icon-container {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+    }
+
+    /* Dark Mode សម្រាប់ Mobile Nav */
+    [data-theme="dark"] .mobile-nav {
+        background: rgba(31, 41, 55, 0.85);
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    /* 4. DASHBOARD CARDS (អូសទៅឆ្វេងស្តាំបាន) */
+    .cards-grid {
+        display: flex; /* ប្តូរពី Grid ទៅ Flex */
+        overflow-x: auto; /* ឱ្យ Scroll បាន */
+        scroll-snap-type: x mandatory; /* Scroll ទាញៗ */
+        gap: 15px;
+        padding-bottom: 20px;
+        margin: 0 -15px; /* ទាញឱ្យពេញអេក្រង់ */
+        padding: 10px 15px 20px 15px;
+    }
+
+    .stat-card {
+        min-width: 260px; /* កំណត់ទំហំកាតនីមួយៗ */
+        scroll-snap-align: center;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    /* 5. TABLE & SEARCH (ធ្វើឱ្យតារាងស្អាតលើទូរស័ព្ទ) */
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .action-bar {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .search-wrapper, .custom-select { width: 100%; }
+
+    .table-wrapper {
+        border-radius: 15px;
+        box-shadow: none;
+        background: transparent;
+        border: none;
+    }
+    
+    /* ធ្វើឱ្យតារាង Scroll បានរលូន */
+    table { min-width: 600px; } 
+
+    /* 6. MODAL (ពេញអេក្រង់លើទូរស័ព្ទ) */
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        border-radius: 20px;
+    }
+    .form-grid { grid-template-columns: 1fr; } /* Form មួយជួរ */
+    .full-width { grid-column: span 1; }
+}
