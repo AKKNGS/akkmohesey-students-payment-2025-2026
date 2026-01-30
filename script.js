@@ -1,5 +1,5 @@
 // 🔥 ដាក់ URL របស់អ្នកនៅទីនេះ (ត្រូវប្រាកដថាបាន Deploy ថ្មី)
-const API_URL = "https://script.google.com/macros/s/AKfycbxFkj2sHuPmcm2SzQGvltiFdKqpFZeJqr8ke8cTYps6525l9HDOz1z1YUHTA140o9vHpw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbznOlNNSOLfBnWtJOF5e66hVaDhLGXzZMfBwIXJlBlAMZPhezWo1S1EB5DMXWJN2EZM6g/exec";
 
 let allData = [], filteredData = [], currentPage = 1;
 const rowsPerPage = 20; let currentUserRole = "";
@@ -162,3 +162,4 @@ function switchView(view) {
     let mob = document.getElementById('mob-'+view);
     if(mob) mob.classList.add('active');
 }
+
