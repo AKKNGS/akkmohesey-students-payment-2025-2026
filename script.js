@@ -1,5 +1,5 @@
 // 🔥 ដាក់ URL Apps Script ថ្មីនៅទីនេះ
-const API_URL = "https://script.google.com/macros/s/AKfycbyKbPm1eF0t6xE2O36T8buy_ASKGRDavjb18FqyitH27vjZsJ-0cnSnUBJb87TU58GscA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzyDtDhF40P_XLSAXnDcPS0FTO_ycVyvHVRj9tKjsVhUxBjTlFt3mNbRfYU13JVU7pl9w/exec";
 
 let allData = [];
 let currentPage = 1;
@@ -140,3 +140,4 @@ function switchView(v) {
     document.getElementById('view-'+v).style.display='block';
 }
 function changePage(n) { currentPage += n; renderTable(); }
+
