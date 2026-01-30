@@ -457,23 +457,35 @@ tr:hover td { background-color: #f8f9fa; }
         border-color: rgba(255,255,255,0.1);
     }
 
-    /* 4. DASHBOARD CARDS (អូសទៅឆ្វេងស្តាំបាន) */
+ 
+    /* ... នៅក្នុងផ្នែក @media (max-width: 768px) ... */
+
+    /* 4. DASHBOARD CARDS (កែប្រែមកជាការអូសពីលើចុះក្រោម) */
     .cards-grid {
-        display: flex; /* ប្តូរពី Grid ទៅ Flex */
-        overflow-x: auto; /* ឱ្យ Scroll បាន */
-        scroll-snap-type: x mandatory; /* Scroll ទាញៗ */
-        gap: 15px;
-        padding-bottom: 20px;
-        margin: 0 -15px; /* ទាញឱ្យពេញអេក្រង់ */
-        padding: 10px 15px 20px 15px;
+        display: grid; /* ប្រើ Grid វិញ (ឈប់ប្រើ Flex) */
+        grid-template-columns: 1fr; /* ដាក់ ១ កាតក្នុងមួយជួរ (ពេញអេក្រង់) */
+        gap: 15px; /* ចន្លោះរវាងកាត */
+        overflow-x: visible; /* បិទការអូសទៅឆ្វេងស្តាំ */
+        padding-bottom: 100px; /* ទុកចន្លោះខាងក្រោមដើម្បីកុំឱ្យ Menu បាំង */
+        margin: 0;
     }
 
     .stat-card {
-        min-width: 260px; /* កំណត់ទំហំកាតនីមួយៗ */
-        scroll-snap-align: center;
-        border-radius: 20px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        border: 1px solid rgba(0,0,0,0.03);
+        min-width: auto; /* លុបការកំណត់ទទឹងអប្បបរមា */
+        width: 100%; /* ឱ្យកាតរីកពេញអេក្រង់ */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* ស្រមោលស្រាលៗ */
+    }
+
+    /* ធ្វើឱ្យកាតធំ (Large Stat) នៅតែស្អាត */
+    .large-stat {
+        grid-column: span 1; 
+    }
+
+    /* សម្រួលផ្នែកខាងលើ (Header) ឱ្យមានគម្លាតស្អាត */
+    .page-header {
+        margin-bottom: 20px;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     /* 5. TABLE & SEARCH (ធ្វើឱ្យតារាងស្អាតលើទូរស័ព្ទ) */
@@ -510,3 +522,4 @@ tr:hover td { background-color: #f8f9fa; }
     .form-grid { grid-template-columns: 1fr; } /* Form មួយជួរ */
     .full-width { grid-column: span 1; }
 }
+
