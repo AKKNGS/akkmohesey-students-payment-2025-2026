@@ -315,3 +315,12 @@ tr:hover td { background-color: #f8f9fa; }
     .signature { text-align: center; width: 40%; }
     .thank-you { text-align: center; margin-top: 40px; font-style: italic; }
 }
+
+/* Print Button Style */
+.print-btn {
+    width: 32px; height: 32px; border-radius: 8px; border: none;
+    background: #d1fae5; color: #059669; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+.print-btn:hover { background: #059669; color: white; transform: translateY(-2px); }
