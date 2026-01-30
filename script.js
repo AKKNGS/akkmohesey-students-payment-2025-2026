@@ -62,11 +62,14 @@ function render() {
 
 function changePage(d) { page += d; render(); }
 
-// MODAL LOGIC
+// --- FIXED MODAL ---
 function openEdit(id) {
     let s = allData.find(x => x.id === id);
     if(!s) return;
+    
+    // ប្រើ style.display = 'flex' ដើម្បីឱ្យវាលេចឡើង
     document.getElementById("editModal").style.display = "flex";
+    
     document.getElementById("edit-id").value = s.id;
     document.getElementById("edit-class").value = s.classRoom;
     document.getElementById("edit-name").value = s.name;
@@ -76,15 +79,19 @@ function openEdit(id) {
     document.getElementById("edit-status").value = s.status;
 }
 function closeModal() { document.getElementById("editModal").style.display = "none"; }
-function calcTotal() { /* Add your logic here */ }
+
+function calcTotal() {
+    let p1 = parseFloat(document.getElementById("edit-first-pay").value.replace(/[^0-9]/g, '')) || 0;
+    let p2 = parseFloat(document.getElementById("edit-second-pay").value.replace(/[^0-9]/g, '')) || 0;
+    document.getElementById("edit-total-pay").value = (p1 + p2).toLocaleString() + " KHR";
+}
 
 document.getElementById("editForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    // Fetch POST logic here...
-    alert("Saved!"); closeModal();
+    alert("Saved (Demo)!"); closeModal();
 });
 
-// PRINT LOGIC
+// --- FIXED PRINT ---
 function printReceipt(id) {
     let s = allData.find(x => x.id === id);
     if(!s) return;
@@ -103,12 +110,14 @@ function printReceipt(id) {
     window.print();
 }
 
-function updateDash() { /* Update cards logic */ }
+function updateDash() { 
+    document.getElementById("totalStudents").innerText = allData.length;
+    // ... Add more stats if needed
+}
 function switchView(v) {
     ['dashboard','students','settings'].forEach(id=>document.getElementById('view-'+id).style.display='none');
     document.getElementById('view-'+v).style.display='block';
 }
-// Add search & filter listeners...
 document.getElementById("searchInput").addEventListener("input", (e) => {
     let txt = e.target.value.toLowerCase();
     filtered = allData.filter(s => s.name.toLowerCase().includes(txt) || s.id.toLowerCase().includes(txt));
