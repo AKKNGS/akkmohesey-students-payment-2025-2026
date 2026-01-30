@@ -195,6 +195,52 @@
         </main>
     </div>
 
+<div class="mobile-nav">
+        <div class="nav-item active" onclick="switchView('dashboard')" id="mob-dashboard">
+            <div class="icon-container">
+                <i class="fas fa-home"></i>
+            </div>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchView('students')" id="mob-students">
+            <div class="icon-container">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <span>Students</span>
+        </div>
+        <div class="nav-item" onclick="switchView('settings')" id="mob-settings">
+            <div class="icon-container">
+                <i class="fas fa-cog"></i>
+            </div>
+            <span>Settings</span>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">...</div>
+    
+    <div id="printArea" class="print-only">...</div>
+
+    <script src="script.js"></script>
+    <script>
+        // កូដបន្ថែមសម្រាប់ Mobile Menu Active State
+        function updateMobileNav(viewName) {
+            document.querySelectorAll('.mobile-nav .nav-item').forEach(el => el.classList.remove('active'));
+            let id = 'mob-' + viewName;
+            let el = document.getElementById(id);
+            if(el) el.classList.add('active');
+        }
+        
+        // Override switchView ដើម្បី Update ទាំង Sidebar និង Mobile Nav
+        const originalSwitchView = window.switchView;
+        window.switchView = function(view) {
+            originalSwitchView(view); // ហៅ function ដើម
+            updateMobileNav(view);    // Update Mobile Menu
+        }
+    </script>
+</body>
+</html>
+    
+
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -325,6 +371,7 @@
     
 </body>
 </html>
+
 
 
 
