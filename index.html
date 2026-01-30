@@ -243,5 +243,75 @@
         // បន្ថែមថ្ងៃខែឆ្នាំបច្ចុប្បន្ន
         document.getElementById('currentDate').innerText = new Date().toLocaleDateString('km-KH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     </script>
+<div id="printArea" class="print-only">
+    <div class="receipt-container">
+        <div class="receipt-header">
+            <div class="school-logo">
+                <i class="fas fa-school"></i>
+            </div>
+            <div class="school-info">
+                <h1>សាលារៀន អន្តរជាតិ (Your School Name)</h1>
+                <p>អាសយដ្ឋាន: ភ្នំពេញ, កម្ពុជា | លេខទូរស័ព្ទ: 012 345 678</p>
+            </div>
+        </div>
+        
+        <h2 class="receipt-title">បង្កាន់ដៃទទួលប្រាក់ (RECEIPT)</h2>
+        <div class="receipt-date">កាលបរិច្ឆេទ: <span id="printDate"></span></div>
+
+        <div class="student-details">
+            <p><strong>ឈ្មោះសិស្ស (Name):</strong> <span id="printName"></span></p>
+            <p><strong>អត្តលេខ (ID):</strong> <span id="printID"></span></p>
+            <p><strong>ថ្នាក់ (Class):</strong> <span id="printClass"></span></p>
+        </div>
+
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>បរិយាយ (Description)</th>
+                    <th style="text-align:right">ទឹកប្រាក់ (Amount)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>តម្លៃសិក្សា (School Fee)</td>
+                    <td style="text-align:right" id="printFee"></td>
+                </tr>
+                <tr>
+                    <td>បង់លើកទី ១ (1st Payment)</td>
+                    <td style="text-align:right" id="printPay1"></td>
+                </tr>
+                <tr>
+                    <td>បង់លើកទី ២ (2nd Payment)</td>
+                    <td style="text-align:right" id="printPay2"></td>
+                </tr>
+                <tr class="total-row">
+                    <td>សរុបបានបង់ (Total Paid)</td>
+                    <td style="text-align:right" id="printTotal"></td>
+                </tr>
+                <tr class="balance-row">
+                    <td>នៅជំពាក់ (Balance)</td>
+                    <td style="text-align:right" id="printBalance"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="receipt-footer">
+            <div class="signature">
+                <p>ហត្ថលេខាបេឡា (Cashier)</p>
+                <br><br>
+                <p>___________________</p>
+            </div>
+            <div class="signature">
+                <p>ហត្ថលេខាអ្នកបង់ (Payer)</p>
+                <br><br>
+                <p>___________________</p>
+            </div>
+        </div>
+        
+        <div class="thank-you">សូមអរគុណ! Thank You!</div>
+    </div>
+</div>
+    
 </body>
 </html>
+
