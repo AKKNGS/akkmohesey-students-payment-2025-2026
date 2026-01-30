@@ -1,4 +1,4 @@
-// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ
+// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ (ត្រូវប្រាកដថាបាន Deploy New Version)
 const API_URL = "https://script.google.com/macros/s/AKfycbzHbeiK7LPCCTuiPkcdmf24nbiUuL0o3dxO-p-Bld-_wXaWZG4Y2BaSNK-7M1mLYRTVNw/exec";
 
 // --- Global Variables ---
@@ -18,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(isLogged === "true") {
         currentUserRole = role;
         document.getElementById("loginOverlay").style.display = "none";
-        document.getElementById("mainApp").style.display = "flex"; // បង្ហាញ App
-        document.getElementById("userDisplay").innerText = `${username} (${role})`;
+        document.getElementById("mainApp").style.display = "flex"; 
+        document.getElementById("userDisplay").innerText = `${username}`;
         
         loadTheme();
         fetchData();
@@ -32,11 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("searchInput").addEventListener("input", filterData);
     document.getElementById("classFilter").addEventListener("change", filterData);
     document.getElementById("themeSwitch").addEventListener("change", (e) => toggleTheme(e.target.checked));
-    
-    // ចុច Enter ដើម្បី Login
-    document.getElementById("loginPass").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") { handleLogin(); }
-    });
 });
 
 function handleLogin() {
@@ -86,11 +81,11 @@ async function fetchData() {
 
     } catch (err) {
         console.error(err);
-        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">បរាជ័យក្នុងការទាញទិន្នន័យ (សូមពិនិត្យ URL)</td></tr>`;
+        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">បរាជ័យក្នុងការទាញទិន្នន័យ (សូមពិនិត្យ URL)</td></tr>`;
     }
 }
 
-// --- 3. PAGINATION & RENDER TABLE ---
+// --- 3. PAGINATION & RENDER TABLE (កន្លែងបន្ថែមប៊ូតុង Print) ---
 function renderPagination() {
     const tbody = document.getElementById("studentTableBody");
     tbody.innerHTML = "";
@@ -104,7 +99,7 @@ function renderPagination() {
     const pageData = filteredData.slice(start, end);
 
     if (pageData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">រកមិនឃើញទិន្នន័យ</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">រកមិនឃើញទិន្នន័យ</td></tr>`;
         document.getElementById("pageIndicator").innerText = "Page 0 of 0";
         return;
     }
@@ -112,11 +107,21 @@ function renderPagination() {
     pageData.forEach(student => {
         let statusClass = student.status && student.status.toLowerCase().includes("paid") ? "status-paid" : "status-partial";
         
-        let actionButton = "";
+        // --- កែប្រែត្រង់នេះ៖ បន្ថែមប៊ូតុង Print ---
+        let actionButtons = "";
         if (currentUserRole === "admin") {
-            actionButton = `<button class="edit-btn" onclick="openEdit('${student.id}')"><i class="fas fa-edit"></i></button>`;
+            actionButtons = `
+                <div style="display:flex; gap:8px;">
+                    <button class="edit-btn" onclick="openEdit('${student.id}')" title="កែប្រែ">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="print-btn" onclick="printReceipt('${student.id}')" title="បោះពុម្ពវិក្កយបត្រ">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
+            `;
         } else {
-            actionButton = `<span style="color:#aaa; font-size:12px;"><i class="fas fa-lock"></i> View Only</span>`;
+            actionButtons = `<span style="color:#aaa; font-size:12px;"><i class="fas fa-lock"></i> View Only</span>`;
         }
 
         const tr = document.createElement("tr");
@@ -126,9 +131,8 @@ function renderPagination() {
             <td>${student.classRoom}</td>
             <td>${student.schoolFee}</td>
             <td style="color:blue">${student.totalPaid}</td>
-            <td style="color:red">${student.balance}</td>
             <td><span class="${statusClass}">${student.status}</span></td>
-            <td>${actionButton}</td>
+            <td>${actionButtons}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -143,26 +147,33 @@ function changePage(step) {
     renderPagination();
 }
 
-// Role Logic
-let actionButtons = "";
-if (currentUserRole === "admin") {
-    actionButtons = `
-        <div style="display:flex; gap:5px;">
-            <button class="edit-btn" onclick="openEdit('${student.id}')" title="Edit">
-                <i class="fas fa-edit"></i>
-            </button>
-            <button class="print-btn" onclick="printReceipt('${student.id}')" title="Print Receipt" 
-                style="background:#10b981; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer;">
-                <i class="fas fa-print"></i>
-            </button>
-        </div>
-    `;
-} else {
-    actionButtons = `<span style="color:#aaa;"><i class="fas fa-lock"></i> View Only</span>`;
+// --- 4. PRINT FUNCTION (មុខងារបោះពុម្ព) ---
+function printReceipt(id) {
+    const student = allData.find(s => s.id === id);
+    if (!student) return;
+
+    // 1. បំពេញទិន្នន័យចូល Template ក្នុង HTML
+    document.getElementById('printDate').innerText = new Date().toLocaleDateString('km-KH');
+    document.getElementById('printName').innerText = student.name;
+    document.getElementById('printID').innerText = student.id;
+    document.getElementById('printClass').innerText = student.classRoom;
+
+    document.getElementById('printFee').innerText = student.schoolFee;
+    
+    // Check ថាមានទិន្នន័យឬអត់ បើអត់ដាក់ 0
+    let p1 = student.firstPayment ? student.firstPayment : "0 KHR";
+    let p2 = student.secondPayment ? student.secondPayment : "0 KHR";
+
+    document.getElementById('printPay1').innerText = p1;
+    document.getElementById('printPay2').innerText = p2;
+    document.getElementById('printTotal').innerText = student.totalPaid;
+    document.getElementById('printBalance').innerText = student.balance;
+
+    // 2. ហៅមុខងារ Print របស់ Browser
+    window.print();
 }
 
-
-// --- 4. FILTERING & DASHBOARD ---
+// --- 5. FILTERING & DASHBOARD ---
 function filterData() {
     const search = document.getElementById("searchInput").value.toLowerCase();
     const cls = document.getElementById("classFilter").value;
@@ -195,14 +206,14 @@ function updateDashboard(data) {
     document.getElementById("totalSecondPay").innerText = formatCurrency(sumSecond);
 }
 
-// --- 5. EDIT & UTILS ---
+// --- 6. EDIT & UTILS ---
 function openEdit(id) {
     if(currentUserRole !== 'admin') { alert("គ្មានសិទ្ធិ!"); return; }
     
     const student = allData.find(s => s.id === id);
     if(!student) return;
 
-    document.getElementById("editModal").style.display = "block";
+    document.getElementById("editModal").style.display = "flex"; // កែមក Flex ដើម្បីឱ្យ Center
     document.getElementById("edit-id").value = student.id;
     document.getElementById("edit-class").value = student.classRoom;
     document.getElementById("edit-name").value = student.name;
@@ -274,25 +285,4 @@ function loadTheme() {
         document.documentElement.setAttribute('data-theme', 'dark');
         document.getElementById("themeSwitch").checked = true;
     }
-}
-
-// === PRINT FUNCTION ===
-function printReceipt(id) {
-    const student = allData.find(s => s.id === id);
-    if (!student) return;
-
-    // 1. បំពេញទិន្នន័យចូល Template
-    document.getElementById('printDate').innerText = new Date().toLocaleDateString('km-KH');
-    document.getElementById('printName').innerText = student.name;
-    document.getElementById('printID').innerText = student.id;
-    document.getElementById('printClass').innerText = student.classRoom;
-
-    document.getElementById('printFee').innerText = student.schoolFee;
-    document.getElementById('printPay1').innerText = student.firstPayment ? formatCurrency(parseCurrency(student.firstPayment)) : "0 KHR";
-    document.getElementById('printPay2').innerText = student.secondPayment ? formatCurrency(parseCurrency(student.secondPayment)) : "0 KHR";
-    document.getElementById('printTotal').innerText = student.totalPaid;
-    document.getElementById('printBalance').innerText = student.balance;
-
-    // 2. ហៅផ្ទាំង Print របស់ Browser
-    window.print();
 }
