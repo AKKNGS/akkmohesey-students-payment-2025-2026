@@ -283,3 +283,35 @@ tr:hover td { background-color: #f8f9fa; }
 [data-theme="dark"] .modal-footer { background: #1f2937; }
 [data-theme="dark"] .form-group input:disabled { background: #374151; color: #9ca3af; border-color: #4b5563; }
 
+/* === PRINT STYLES === */
+.print-only { display: none; } /* លាក់លើអេក្រង់ធម្មតា */
+
+@media print {
+    body * { visibility: hidden; } /* លាក់អ្វីៗទាំងអស់ */
+    #printArea, #printArea * { visibility: visible; } /* បង្ហាញតែវិក្កយបត្រ */
+    #printArea {
+        position: absolute; left: 0; top: 0; width: 100%;
+        display: block; background: white; color: black;
+    }
+    
+    .receipt-container {
+        width: 100%; max-width: 800px; margin: 0 auto;
+        padding: 40px; border: 2px solid #000;
+        font-family: 'Kantumruy Pro', serif;
+    }
+    .receipt-header { display: flex; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
+    .school-logo i { font-size: 50px; margin-right: 20px; }
+    .school-info h1 { margin: 0; font-size: 24px; }
+    .receipt-title { text-align: center; font-size: 28px; text-decoration: underline; margin: 20px 0; }
+    
+    .student-details { margin: 20px 0; font-size: 16px; line-height: 1.6; }
+    
+    .receipt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .receipt-table th, .receipt-table td { border: 1px solid #000; padding: 10px; }
+    .total-row { font-weight: bold; background: #eee !important; -webkit-print-color-adjust: exact; }
+    .balance-row { font-weight: bold; color: red; }
+    
+    .receipt-footer { display: flex; justify-content: space-between; margin-top: 50px; }
+    .signature { text-align: center; width: 40%; }
+    .thank-you { text-align: center; margin-top: 40px; font-style: italic; }
+}
