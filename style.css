@@ -317,10 +317,68 @@ tr:hover td { background-color: #f8f9fa; }
 }
 
 /* Print Button Style */
-.print-btn {
-    width: 32px; height: 32px; border-radius: 8px; border: none;
-    background: #d1fae5; color: #059669; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: 0.2s;
+/* === PRINT STYLES === */
+.print-only { display: none; }
+
+@media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    
+    #printArea {
+        position: absolute; left: 0; top: 0; width: 100%;
+        background: white; color: black; font-family: 'Kantumruy Pro', serif;
+    }
+    
+    .receipt-container {
+        width: 100%; max-width: 210mm; /* A4 width */
+        margin: 0 auto; padding: 20px 40px;
+        border: 2px solid #333; /* ដាក់ស៊ុម */
+    }
+
+    /* Header Design */
+    .receipt-header {
+        text-align: center; margin-bottom: 20px;
+    }
+    .real-logo {
+        width: 100px; height: auto; /* កំណត់ទំហំ Logo */
+        margin-bottom: 10px;
+        display: block; margin-left: auto; margin-right: auto;
+    }
+    .school-info h1 {
+        margin: 5px 0; font-size: 22px; font-weight: bold; color: #333;
+        font-family: 'Kantumruy Pro', serif; /* ធានាថាចេញ Font ខ្មែរ */
+    }
+    .school-info p { font-size: 14px; margin: 0; color: #555; }
+    
+    .receipt-divider { border-bottom: 2px double #000; margin: 10px 0 20px 0; }
+    
+    .receipt-title {
+        text-align: center; font-size: 24px; text-decoration: underline;
+        margin: 10px 0 20px; text-transform: uppercase;
+    }
+    
+    /* Student Details */
+    .student-details {
+        display: flex; flex-wrap: wrap; justify-content: space-between;
+        margin-bottom: 20px; border: 1px dashed #999; padding: 15px; border-radius: 8px;
+    }
+    .detail-row { width: 48%; margin-bottom: 5px; }
+    
+    /* Table */
+    .receipt-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .receipt-table th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; }
+    .receipt-table th, .receipt-table td { border: 1px solid #000; padding: 8px 12px; }
+    
+    .total-row td { font-weight: bold; background-color: #e6e6e6 !important; -webkit-print-color-adjust: exact; }
+    .balance-row td { font-weight: bold; }
+    
+    /* Signatures */
+    .receipt-footer {
+        display: flex; justify-content: space-between; margin-top: 60px;
+    }
+    .signature { text-align: center; width: 40%; }
+    .signature p { font-weight: bold; margin-bottom: 50px; }
+    
+    .thank-you { text-align: center; margin-top: 40px; font-style: italic; font-weight: bold; }
+    .footer-note { text-align: center; font-size: 10px; margin-top: 10px; color: #666; }
 }
-.print-btn:hover { background: #059669; color: white; transform: translateY(-2px); }
