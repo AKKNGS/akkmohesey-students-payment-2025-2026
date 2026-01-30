@@ -143,6 +143,25 @@ function changePage(step) {
     renderPagination();
 }
 
+// Role Logic
+let actionButtons = "";
+if (currentUserRole === "admin") {
+    actionButtons = `
+        <div style="display:flex; gap:5px;">
+            <button class="edit-btn" onclick="openEdit('${student.id}')" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="print-btn" onclick="printReceipt('${student.id}')" title="Print Receipt" 
+                style="background:#10b981; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer;">
+                <i class="fas fa-print"></i>
+            </button>
+        </div>
+    `;
+} else {
+    actionButtons = `<span style="color:#aaa;"><i class="fas fa-lock"></i> View Only</span>`;
+}
+
+
 // --- 4. FILTERING & DASHBOARD ---
 function filterData() {
     const search = document.getElementById("searchInput").value.toLowerCase();
@@ -255,4 +274,25 @@ function loadTheme() {
         document.documentElement.setAttribute('data-theme', 'dark');
         document.getElementById("themeSwitch").checked = true;
     }
+}
+
+// === PRINT FUNCTION ===
+function printReceipt(id) {
+    const student = allData.find(s => s.id === id);
+    if (!student) return;
+
+    // 1. បំពេញទិន្នន័យចូល Template
+    document.getElementById('printDate').innerText = new Date().toLocaleDateString('km-KH');
+    document.getElementById('printName').innerText = student.name;
+    document.getElementById('printID').innerText = student.id;
+    document.getElementById('printClass').innerText = student.classRoom;
+
+    document.getElementById('printFee').innerText = student.schoolFee;
+    document.getElementById('printPay1').innerText = student.firstPayment ? formatCurrency(parseCurrency(student.firstPayment)) : "0 KHR";
+    document.getElementById('printPay2').innerText = student.secondPayment ? formatCurrency(parseCurrency(student.secondPayment)) : "0 KHR";
+    document.getElementById('printTotal').innerText = student.totalPaid;
+    document.getElementById('printBalance').innerText = student.balance;
+
+    // 2. ហៅផ្ទាំង Print របស់ Browser
+    window.print();
 }
