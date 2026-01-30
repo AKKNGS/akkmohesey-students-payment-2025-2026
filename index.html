@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Finance System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Kantumruy+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>School Finance Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Kantumruy+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,146 +12,104 @@
 
     <div id="loginOverlay">
         <div class="login-card">
-            <h2 style="color:#4361ee">School Admin</h2>
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="loginUser" placeholder="Username">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="loginPass" placeholder="Password">
-            </div>
-            <button onclick="handleLogin()" class="login-btn">Login</button>
-            <p id="loginError" style="display:none; color:red; margin-top:10px;">Login Failed!</p>
-            <p style="margin-top:10px; font-size:12px; color:#666;">Demo: admin / 123</p>
+            <h2 style="color:#4361ee; margin-bottom:20px;">School Admin</h2>
+            <input type="text" id="loginUser" placeholder="Username" style="margin-bottom:10px;">
+            <input type="password" id="loginPass" placeholder="Password" style="margin-bottom:20px;">
+            <button onclick="handleLogin()">Login</button>
+            <p id="loginError" style="color:red; display:none; margin-top:10px;">Login Failed</p>
+            <small style="color:#888; display:block; margin-top:20px;">Demo: admin / 123</small>
         </div>
     </div>
 
-    <div class="container" id="mainApp" style="display:none;">
+    <div class="app-container" id="mainApp" style="display:none;">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-school"></i> <h2>School Admin</h2>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li onclick="switchView('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-home"></i> <span>Dashboard</span></li>
-                    <li onclick="switchView('students')" class="nav-item" id="nav-students"><i class="fas fa-user-graduate"></i> <span>Students</span></li>
-                    <li onclick="switchView('settings')" class="nav-item" id="nav-settings"><i class="fas fa-cog"></i> <span>Settings</span></li>
-                </ul>
+            <div class="brand"><i class="fas fa-school"></i> Admin</div>
+            <nav>
+                <div onclick="switchView('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fas fa-chart-pie"></i> Dashboard</div>
+                <div onclick="switchView('students')" class="nav-item" id="nav-students"><i class="fas fa-users"></i> Students</div>
             </nav>
-            <div class="sidebar-footer">
-                <span id="userDisplay">User</span>
-                <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
+            <div class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </aside>
 
-        <main class="main-content">
+        <main>
             <section id="view-dashboard">
-                <header class="page-header">
-                    <h1>Dashboard</h1> <div class="date-badge" id="currentDate"></div>
-                </header>
+                <h1>Dashboard Overview</h1>
                 <div class="cards-grid">
-                    <div class="stat-card"><div class="icon blue"><i class="fas fa-users"></i></div><div><h3>Total Students</h3><h2 id="totalStudents">0</h2></div></div>
-                    <div class="stat-card"><div class="icon green"><i class="fas fa-check"></i></div><div><h3>Paid</h3><h2 id="totalPaidStatus">0</h2></div></div>
-                    <div class="stat-card"><div class="icon orange"><i class="fas fa-exclamation"></i></div><div><h3>Partial</h3><h2 id="totalPartialStatus">0</h2></div></div>
-                    <div class="stat-card"><div class="icon purple"><i class="fas fa-coins"></i></div><div><h3>Total Income</h3><h2 id="totalSchoolFee">0</h2></div></div>
-                    <div class="stat-card"><div class="icon teal"><i class="fas fa-hand-holding-usd"></i></div><div><h3>1st Payment</h3><h2 id="totalFirstPay">0</h2></div></div>
-                    <div class="stat-card"><div class="icon red"><i class="fas fa-wallet"></i></div><div><h3>2nd Payment</h3><h2 id="totalSecondPay">0</h2></div></div>
+                    <div class="card"><div class="icon blue"><i class="fas fa-users"></i></div><div><h3>Total Students</h3><h2 id="d-total">0</h2></div></div>
+                    <div class="card"><div class="icon green"><i class="fas fa-check"></i></div><div><h3>Paid</h3><h2 id="d-paid">0</h2></div></div>
+                    <div class="card"><div class="icon orange"><i class="fas fa-exclamation"></i></div><div><h3>Partial</h3><h2 id="d-partial">0</h2></div></div>
+                    <div class="card"><div class="icon purple"><i class="fas fa-coins"></i></div><div><h3>Total Income</h3><h2 id="d-income">0 KHR</h2></div></div>
+                    <div class="card"><div class="icon teal"><i class="fas fa-hand-holding-usd"></i></div><div><h3>1st Payment</h3><h2 id="d-pay1">0 KHR</h2></div></div>
+                    <div class="card"><div class="icon red"><i class="fas fa-wallet"></i></div><div><h3>2nd Payment</h3><h2 id="d-pay2">0 KHR</h2></div></div>
                 </div>
             </section>
 
             <section id="view-students" style="display:none;">
-                <header class="page-header">
+                <div class="header-bar">
                     <h1>Students List</h1>
-                    <div class="action-bar">
-                        <input type="text" id="searchInput" placeholder="Search ID or Name...">
-                        <select id="classFilter"><option value="all">All Classes</option></select>
-                    </div>
-                </header>
-                <div class="table-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search...">
+                </div>
+                <div class="table-container">
                     <table>
-                        <thead>
-                            <tr><th>ID</th><th>Name</th><th>Class</th><th>Fee</th><th>Paid</th><th>Status</th><th>Action</th></tr>
-                        </thead>
-                        <tbody id="studentTableBody"></tbody>
+                        <thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Fee</th><th>Paid</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="tableBody"></tbody>
                     </table>
                 </div>
-                <div class="pagination-wrapper">
-                    <button id="btnPrev" onclick="changePage(-1)">Prev</button>
+                <div class="pagination">
+                    <button onclick="changePage(-1)">Prev</button>
                     <span id="pageIndicator">1</span>
-                    <button id="btnNext" onclick="changePage(1)">Next</button>
-                </div>
-            </section>
-
-            <section id="view-settings" style="display:none;">
-                <h1>Settings</h1>
-                <div class="stat-card">
-                    <span>Dark Mode</span> <input type="checkbox" id="themeSwitch">
+                    <button onclick="changePage(1)">Next</button>
                 </div>
             </section>
         </main>
-
+        
         <div class="mobile-nav">
             <div onclick="switchView('dashboard')"><i class="fas fa-home"></i></div>
             <div onclick="switchView('students')"><i class="fas fa-user"></i></div>
-            <div onclick="switchView('settings')"><i class="fas fa-cog"></i></div>
         </div>
     </div>
 
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Payment</h2>
-                <span onclick="closeModal()" class="close-modal">&times;</span>
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header"><h3>Edit Student</h3><span onclick="closeModal()">×</span></div>
+            <div class="modal-body">
+                <label>Name</label><input type="text" id="m-name" disabled>
+                <label>1st Payment</label><input type="text" id="m-pay1">
+                <label>2nd Payment</label><input type="text" id="m-pay2">
+                <label>Status</label>
+                <select id="m-status"><option value="Paid">Paid</option><option value="Partial">Partial</option></select>
             </div>
-            <form id="editForm">
-                <input type="hidden" id="edit-id"><input type="hidden" id="edit-class">
-                <div class="form-grid">
-                    <div class="form-group full"><label>Name</label><input type="text" id="edit-name" disabled style="background:#eee"></div>
-                    <div class="form-group"><label>Payment 1</label><input type="text" id="edit-first-pay" oninput="calcTotal()"></div>
-                    <div class="form-group"><label>Payment 2</label><input type="text" id="edit-second-pay" oninput="calcTotal()"></div>
-                    <div class="form-group"><label>Total Paid</label><input type="text" id="edit-total-pay" readonly style="font-weight:bold; color:blue"></div>
-                    <div class="form-group"><label>Status</label>
-                        <select id="edit-status"><option value="Paid">Paid</option><option value="Partial">Partial</option></select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="closeModal()" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-save">Save Update</button>
-                </div>
-            </form>
+            <div class="modal-footer">
+                <button onclick="closeModal()" class="btn-cancel">Cancel</button>
+                <button class="btn-save">Save</button>
+            </div>
         </div>
     </div>
 
     <div id="printArea" class="print-only">
-        <div class="receipt-box">
+        <div class="receipt">
             <div class="rec-header">
-                <img src="logo.jpg" alt="Logo" class="rec-logo">
-                <div class="rec-school">
-                    <h1>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
-                    <p>ភូមិស្រះកែវ, សង្កាត់វាំងចាស់ | 092 750 276</p>
-                </div>
+                <img src="logo.png" style="width:80px;">
+                <h2>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h2>
             </div>
-            <h2 class="rec-title">បង្កាន់ដៃទទួលប្រាក់ (RECEIPT)</h2>
-            <p class="rec-date">Date: <span id="pDate"></span></p>
-            <div class="rec-info">
-                <p>Name: <b id="pName"></b></p> <p>ID: <b id="pID"></b></p> <p>Class: <b id="pClass"></b></p>
-            </div>
+            <hr>
+            <h3 style="text-align:center; text-decoration:underline;">RECEIPT</h3>
+            <p>Name: <b id="p-name"></b> | ID: <b id="p-id"></b> | Class: <b id="p-class"></b></p>
             <table class="rec-table">
-                <tr><td>School Fee</td><td align="right" id="pFee"></td></tr>
-                <tr><td>Payment 1</td><td align="right" id="pPay1"></td></tr>
-                <tr><td>Payment 2</td><td align="right" id="pPay2"></td></tr>
-                <tr class="rec-total"><td>Total Paid</td><td align="right" id="pTotal"></td></tr>
-                <tr class="rec-balance"><td>Balance</td><td align="right" id="pBalance"></td></tr>
+                <tr><td>Fee</td><td align="right" id="p-fee"></td></tr>
+                <tr><td>Paid 1</td><td align="right" id="p-pay1"></td></tr>
+                <tr><td>Paid 2</td><td align="right" id="p-pay2"></td></tr>
+                <tr style="font-weight:bold; background:#eee;"><td>Total</td><td align="right" id="p-total"></td></tr>
+                <tr style="color:red;"><td>Balance</td><td align="right" id="p-bal"></td></tr>
             </table>
-            <div class="rec-footer">
-                <div><p>Payer</p><br><br>_______</div>
-                <div><p>Cashier</p><br><br>_______</div>
+            <br><br>
+            <div style="display:flex; justify-content:space-between; text-align:center;">
+                <div><p>Payer</p><br>______</div>
+                <div><p>Cashier</p><br>______</div>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
-    <script>document.getElementById('currentDate').innerText = new Date().toLocaleDateString();</script>
 </body>
 </html>
