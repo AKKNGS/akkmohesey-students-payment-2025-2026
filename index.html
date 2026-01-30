@@ -12,7 +12,7 @@
 
     <div id="loginOverlay">
         <div class="login-card">
-            <h2>School Admin</h2>
+            <h2 style="color:#4361ee">School Admin</h2>
             <div class="input-group">
                 <i class="fas fa-user"></i>
                 <input type="text" id="loginUser" placeholder="Username">
@@ -48,32 +48,30 @@
         <main class="main-content">
             <section id="view-dashboard">
                 <header class="page-header">
-                    <h1>Dashboard 2025-2026</h1>
+                    <h1>Dashboard</h1> <div class="date-badge" id="currentDate"></div>
                 </header>
                 <div class="cards-grid">
-                    <div class="stat-card"><div class="icon blue"><i class="fas fa-users"></i></div><div><h3>សិស្សសរុប</h3><h2 id="totalStudents">0</h2></div></div>
-                    <div class="stat-card"><div class="icon green"><i class="fas fa-check"></i></div><div><h3>បង់រួច</h3><h2 id="totalPaidStatus">0</h2></div></div>
-                    <div class="stat-card"><div class="icon orange"><i class="fas fa-exclamation"></i></div><div><h3>ជំពាក់</h3><h2 id="totalPartialStatus">0</h2></div></div>
-                    <div class="stat-card"><div class="icon purple"><i class="fas fa-coins"></i></div><div><h3>ចំណូលសរុប</h3><h2 id="totalSchoolFee">0</h2></div></div>
-                    <div class="stat-card"><div class="icon teal"><i class="fas fa-hand-holding-usd"></i></div><div><h3>លើកទី ១</h3><h2 id="totalFirstPay">0</h2></div></div>
-                    <div class="stat-card"><div class="icon red"><i class="fas fa-wallet"></i></div><div><h3>លើកទី ២</h3><h2 id="totalSecondPay">0</h2></div></div>
+                    <div class="stat-card"><div class="icon blue"><i class="fas fa-users"></i></div><div><h3>Total Students</h3><h2 id="totalStudents">0</h2></div></div>
+                    <div class="stat-card"><div class="icon green"><i class="fas fa-check"></i></div><div><h3>Paid</h3><h2 id="totalPaidStatus">0</h2></div></div>
+                    <div class="stat-card"><div class="icon orange"><i class="fas fa-exclamation"></i></div><div><h3>Partial</h3><h2 id="totalPartialStatus">0</h2></div></div>
+                    <div class="stat-card"><div class="icon purple"><i class="fas fa-coins"></i></div><div><h3>Total Income</h3><h2 id="totalSchoolFee">0</h2></div></div>
+                    <div class="stat-card"><div class="icon teal"><i class="fas fa-hand-holding-usd"></i></div><div><h3>1st Payment</h3><h2 id="totalFirstPay">0</h2></div></div>
+                    <div class="stat-card"><div class="icon red"><i class="fas fa-wallet"></i></div><div><h3>2nd Payment</h3><h2 id="totalSecondPay">0</h2></div></div>
                 </div>
             </section>
 
             <section id="view-students" style="display:none;">
                 <header class="page-header">
-                    <h1>បញ្ជីសិស្ស</h1>
+                    <h1>Students List</h1>
                     <div class="action-bar">
-                        <input type="text" id="searchInput" placeholder="Search...">
+                        <input type="text" id="searchInput" placeholder="Search ID or Name...">
                         <select id="classFilter"><option value="all">All Classes</option></select>
                     </div>
                 </header>
                 <div class="table-wrapper">
                     <table>
                         <thead>
-                            <tr>
-                                <th>ID</th><th>Name</th><th>Class</th><th>Fee</th><th>Paid</th><th>Status</th><th>Action</th>
-                            </tr>
+                            <tr><th>ID</th><th>Name</th><th>Class</th><th>Fee</th><th>Paid</th><th>Status</th><th>Action</th></tr>
                         </thead>
                         <tbody id="studentTableBody"></tbody>
                     </table>
@@ -92,7 +90,7 @@
                 </div>
             </section>
         </main>
-        
+
         <div class="mobile-nav">
             <div onclick="switchView('dashboard')"><i class="fas fa-home"></i></div>
             <div onclick="switchView('students')"><i class="fas fa-user"></i></div>
@@ -103,32 +101,32 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Edit Student</h2>
+                <h2>Edit Payment</h2>
                 <span onclick="closeModal()" class="close-modal">&times;</span>
             </div>
             <form id="editForm">
                 <input type="hidden" id="edit-id"><input type="hidden" id="edit-class">
                 <div class="form-grid">
-                    <div class="form-group full"><label>Name</label><input type="text" id="edit-name" disabled></div>
-                    <div class="form-group"><label>Pay 1</label><input type="text" id="edit-first-pay" oninput="calcTotal()"></div>
-                    <div class="form-group"><label>Pay 2</label><input type="text" id="edit-second-pay" oninput="calcTotal()"></div>
-                    <div class="form-group"><label>Total</label><input type="text" id="edit-total-pay" readonly></div>
+                    <div class="form-group full"><label>Name</label><input type="text" id="edit-name" disabled style="background:#eee"></div>
+                    <div class="form-group"><label>Payment 1</label><input type="text" id="edit-first-pay" oninput="calcTotal()"></div>
+                    <div class="form-group"><label>Payment 2</label><input type="text" id="edit-second-pay" oninput="calcTotal()"></div>
+                    <div class="form-group"><label>Total Paid</label><input type="text" id="edit-total-pay" readonly style="font-weight:bold; color:blue"></div>
                     <div class="form-group"><label>Status</label>
                         <select id="edit-status"><option value="Paid">Paid</option><option value="Partial">Partial</option></select>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="closeModal()" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-save">Save</button>
+                    <button type="submit" class="btn-save">Save Update</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="printArea">
+    <div id="printArea" class="print-only">
         <div class="receipt-box">
             <div class="rec-header">
-                <img src="logo.png" alt="Logo" class="rec-logo">
+                <img src="logo.jpg" alt="Logo" class="rec-logo">
                 <div class="rec-school">
                     <h1>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
                     <p>ភូមិស្រះកែវ, សង្កាត់វាំងចាស់ | 092 750 276</p>
@@ -136,13 +134,9 @@
             </div>
             <h2 class="rec-title">បង្កាន់ដៃទទួលប្រាក់ (RECEIPT)</h2>
             <p class="rec-date">Date: <span id="pDate"></span></p>
-            
             <div class="rec-info">
-                <p>Name: <b id="pName"></b></p>
-                <p>ID: <b id="pID"></b></p>
-                <p>Class: <b id="pClass"></b></p>
+                <p>Name: <b id="pName"></b></p> <p>ID: <b id="pID"></b></p> <p>Class: <b id="pClass"></b></p>
             </div>
-
             <table class="rec-table">
                 <tr><td>School Fee</td><td align="right" id="pFee"></td></tr>
                 <tr><td>Payment 1</td><td align="right" id="pPay1"></td></tr>
@@ -150,7 +144,6 @@
                 <tr class="rec-total"><td>Total Paid</td><td align="right" id="pTotal"></td></tr>
                 <tr class="rec-balance"><td>Balance</td><td align="right" id="pBalance"></td></tr>
             </table>
-
             <div class="rec-footer">
                 <div><p>Payer</p><br><br>_______</div>
                 <div><p>Cashier</p><br><br>_______</div>
@@ -159,5 +152,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script>document.getElementById('currentDate').innerText = new Date().toLocaleDateString();</script>
 </body>
 </html>
