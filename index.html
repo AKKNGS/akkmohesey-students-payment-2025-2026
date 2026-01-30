@@ -3,132 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Finance Dashboard</title>
+    <title>School Finance System</title>
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
-    <aside class="sidebar">
-        <div class="logo">
-            <h2>🏫 School Admin</h2>
+
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2>🏫 ចូលប្រព័ន្ធ</h2>
+            <p style="color:#666; margin-bottom:20px;">School Management System</p>
+            
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="loginUser" placeholder="ឈ្មោះអ្នកប្រើ (Username)">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="loginPass" placeholder="លេខសម្ងាត់ (Password)">
+            </div>
+
+            <button onclick="handleLogin()" class="login-btn">Login</button>
+            <p id="loginError">ឈ្មោះ ឬ លេខសម្ងាត់មិនត្រឹមត្រូវ!</p>
+
+            <div class="login-note">
+                <b>គណនីសាកល្បង:</b><br>
+                Admin: <code>admin</code> / <code>123</code><br>
+                Viewer: <code>staff</code> / <code>123</code>
+            </div>
         </div>
-        <nav>
-            <ul>
-                <li onclick="switchView('dashboard')" class="nav-item active" id="nav-dashboard">
-                    <i class="fas fa-home"></i> ទំព័រដើម
-                </li>
-                <li onclick="switchView('students')" class="nav-item" id="nav-students">
-                    <i class="fas fa-users"></i> សិស្សទាំងអស់
-                </li>
-                <li onclick="switchView('settings')" class="nav-item" id="nav-settings">
-                    <i class="fas fa-cog"></i> ការកំណត់
-                </li>
-            </ul>
-        </nav>
-    </aside>
+    </div>
 
-    <main class="main-content">
+    <div class="container" id="mainApp" style="display:none;">
         
-        <section id="view-dashboard">
-            <header>
-                <h1>ផ្ទាំងគ្រប់គ្រងហិរញ្ញវត្ថុ (2025-2026)</h1>
-            </header>
-
-            <div class="cards-grid">
-                <div class="card">
-                    <div class="card-info">
-                        <h3>សិស្សសរុប</h3>
-                        <h2 id="totalStudents">...</h2>
-                    </div>
-                    <div class="card-icon blue"><i class="fas fa-user-graduate"></i></div>
-                </div>
-                <div class="card">
-                    <div class="card-info">
-                        <h3>បង់រួចរាល់ (Paid)</h3>
-                        <h2 id="totalPaidStatus">...</h2>
-                    </div>
-                    <div class="card-icon green"><i class="fas fa-check-circle"></i></div>
-                </div>
-                <div class="card">
-                    <div class="card-info">
-                        <h3>ជំពាក់ (Partial)</h3>
-                        <h2 id="totalPartialStatus">...</h2>
-                    </div>
-                    <div class="card-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-info">
-                        <h3>ចំណូលរំពឹងទុក (១ឆ្នាំ)</h3>
-                        <h2 id="totalSchoolFee">0 KHR</h2>
-                    </div>
-                    <div class="card-icon purple"><i class="fas fa-coins"></i></div>
-                </div>
-                <div class="card">
-                    <div class="card-info">
-                        <h3>ប្រមូលបានលើកទី ១</h3>
-                        <h2 id="totalFirstPay">0 KHR</h2>
-                    </div>
-                    <div class="card-icon teal"><i class="fas fa-hand-holding-usd"></i></div>
-                </div>
-                <div class="card">
-                    <div class="card-info">
-                        <h3>ប្រមូលបានលើកទី ២</h3>
-                        <h2 id="totalSecondPay">0 KHR</h2>
-                    </div>
-                    <div class="card-icon red"><i class="fas fa-wallet"></i></div>
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>🏫 School Admin</h2>
+                <div id="userDisplay" style="font-size:12px; color:#888; margin-top:-5px;"></div>
+            </div>
+            <nav>
+                <ul>
+                    <li onclick="switchView('dashboard')" class="nav-item active" id="nav-dashboard">
+                        <i class="fas fa-home"></i> ទំព័រដើម
+                    </li>
+                    <li onclick="switchView('students')" class="nav-item" id="nav-students">
+                        <i class="fas fa-users"></i> សិស្សទាំងអស់
+                    </li>
+                    <li onclick="switchView('settings')" class="nav-item" id="nav-settings">
+                        <i class="fas fa-cog"></i> ការកំណត់
+                    </li>
+                </ul>
+            </nav>
+            <div class="logout-section">
+                <div onclick="logout()" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> ចាកចេញ (Logout)
                 </div>
             </div>
-        </section>
+        </aside>
 
-        <section id="view-students" style="display: none;">
-            <header>
-                <h1>បញ្ជីសិស្ស</h1>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="ស្វែងរក...">
+        <main class="main-content">
+            
+            <section id="view-dashboard">
+                <header>
+                    <h1>ផ្ទាំងគ្រប់គ្រងហិរញ្ញវត្ថុ (2025-2026)</h1>
+                </header>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>សិស្សសរុប</h3>
+                            <h2 id="totalStudents">...</h2>
+                        </div>
+                        <div class="card-icon blue"><i class="fas fa-user-graduate"></i></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>បង់រួចរាល់ (Paid)</h3>
+                            <h2 id="totalPaidStatus">...</h2>
+                        </div>
+                        <div class="card-icon green"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>ជំពាក់ (Partial)</h3>
+                            <h2 id="totalPartialStatus">...</h2>
+                        </div>
+                        <div class="card-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>ចំណូលរំពឹងទុក (១ឆ្នាំ)</h3>
+                            <h2 id="totalSchoolFee">0 KHR</h2>
+                        </div>
+                        <div class="card-icon purple"><i class="fas fa-coins"></i></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>ប្រមូលបានលើកទី ១</h3>
+                            <h2 id="totalFirstPay">0 KHR</h2>
+                        </div>
+                        <div class="card-icon teal"><i class="fas fa-hand-holding-usd"></i></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h3>ប្រមូលបានលើកទី ២</h3>
+                            <h2 id="totalSecondPay">0 KHR</h2>
+                        </div>
+                        <div class="card-icon red"><i class="fas fa-wallet"></i></div>
+                    </div>
                 </div>
-            </header>
+            </section>
 
-            <div style="margin-bottom: 20px;">
-                <select id="classFilter" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                    <option value="all">ថ្នាក់ទាំងអស់</option>
-                </select>
-            </div>
+            <section id="view-students" style="display: none;">
+                <header>
+                    <h1>បញ្ជីសិស្ស</h1>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="ស្វែងរក ID ឬ ឈ្មោះ...">
+                    </div>
+                </header>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>ឈ្មោះ</th>
-                            <th>ថ្នាក់</th>
-                            <th>តម្លៃសិក្សា</th>
-                            <th>បានបង់សរុប</th>
-                            <th>ជំពាក់</th>
-                            <th>ស្ថានភាព</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTableBody">
-                        <tr><td colspan="8" style="text-align:center;">កំពុងទាញទិន្នន័យ...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-settings" style="display: none;">
-            <header><h1>ការកំណត់</h1></header>
-            <div class="card" style="display: block;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>Dark Mode (ផ្ទៃងងឹត)</span>
-                    <input type="checkbox" id="themeSwitch" style="width: 20px; height: 20px;">
+                <div class="filters">
+                    <select id="classFilter">
+                        <option value="all">ថ្នាក់ទាំងអស់</option>
+                    </select>
                 </div>
-            </div>
-        </section>
-    </main>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ឈ្មោះ</th>
+                                <th>ថ្នាក់</th>
+                                <th>តម្លៃសិក្សា</th>
+                                <th>បានបង់សរុប</th>
+                                <th>ជំពាក់</th>
+                                <th>ស្ថានភាព</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <tr><td colspan="8" style="text-align:center;">កំពុងទាញទិន្នន័យ...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination-container">
+                    <button onclick="changePage(-1)" id="btnPrev">Previous</button>
+                    <span id="pageIndicator">Page 1 of 1</span>
+                    <button onclick="changePage(1)" id="btnNext">Next</button>
+                </div>
+            </section>
+
+            <section id="view-settings" style="display: none;">
+                <header><h1>ការកំណត់</h1></header>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>Dark Mode (ផ្ទៃងងឹត)</span>
+                        <input type="checkbox" id="themeSwitch" style="transform: scale(1.5);">
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <div id="editModal" class="modal">
         <div class="modal-content">
@@ -140,7 +181,7 @@
                 <div class="form-group"><label>ឈ្មោះ:</label><input type="text" id="edit-name" disabled></div>
                 <div class="form-group"><label>បង់លើកទី ១:</label><input type="text" id="edit-first-pay" oninput="calculateTotal()"></div>
                 <div class="form-group"><label>បង់លើកទី ២:</label><input type="text" id="edit-second-pay" oninput="calculateTotal()"></div>
-                <div class="form-group"><label>សរុប:</label><input type="text" id="edit-total-pay" readonly></div>
+                <div class="form-group"><label>សរុប:</label><input type="text" id="edit-total-pay" readonly style="background:#f0f0f0; font-weight:bold;"></div>
                 <div class="form-group">
                     <label>ស្ថានភាព:</label>
                     <select id="edit-status">
