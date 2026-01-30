@@ -1,5 +1,5 @@
 // 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ
-const API_URL = "https://script.google.com/macros/s/AKfycbzyDtDhF40P_XLSAXnDcPS0FTO_ycVyvHVRj9tKjsVhUxBjTlFt3mNbRfYU13JVU7pl9w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwZhHGggAyv9PdSLGl0_UZLUrCmVPVKGSdQhnKCCW3ZwtAY8vPyi_T4Yy0rTGSpE0HrqA/exec";
 
 let allData = [];
 let currentPage = 1;
@@ -172,3 +172,4 @@ function switchView(view) {
     ['dashboard','students','settings'].forEach(id => document.getElementById('view-'+id).style.display='none');
     document.getElementById('view-'+view).style.display='block';
 }
+
