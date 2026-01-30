@@ -245,18 +245,19 @@
     </script>
 <div id="printArea" class="print-only">
     <div class="receipt-container">
-        <div class="receipt-header">
-            <div class="school-logo">
-                <i class="fas fa-school"></i>
+        
+        <div class="receipt-header" style="flex-direction: column; text-align: center; align-items: center;">
+            <div class="school-logo" style="margin-right: 0; margin-bottom: 15px;">
+                <i class="fas fa-school" style="font-size: 65px;"></i>
             </div>
             <div class="school-info">
-                <h1>សាលារៀន អន្តរជាតិ (Your School Name)</h1>
-                <p>អាសយដ្ឋាន: ភ្នំពេញ, កម្ពុជា | លេខទូរស័ព្ទ: 012 345 678</p>
+                <h1 style="font-size: 26px; margin-bottom: 5px;">សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
+                <p style="font-size: 14px;">អាសយដ្ឋាន: ភូមិស្រះកែវ, សង្កាត់វាំងចាស់ | លេខទូរស័ព្ទ: 092 750 276</p>
             </div>
         </div>
         
         <h2 class="receipt-title">បង្កាន់ដៃទទួលប្រាក់ (RECEIPT)</h2>
-        <div class="receipt-date">កាលបរិច្ឆេទ: <span id="printDate"></span></div>
+        <div class="receipt-date">កាលបរិច្ឆេទ (Date): <span id="printDate" style="font-weight:bold;"></span></div>
 
         <div class="student-details">
             <p><strong>ឈ្មោះសិស្ស (Name):</strong> <span id="printName"></span></p>
@@ -297,21 +298,21 @@
 
         <div class="receipt-footer">
             <div class="signature">
-                <p>ហត្ថលេខាបេឡា (Cashier)</p>
-                <br><br>
-                <p>___________________</p>
+                <p style="font-weight:bold;">ហត្ថលេខាអ្នកបង់ប្រាក់ (Payer)</p>
+                <br><br><br> <p>___________________</p>
             </div>
             <div class="signature">
-                <p>ហត្ថលេខាអ្នកបង់ (Payer)</p>
-                <br><br>
+                <p style="font-weight:bold;">ហត្ថលេខាអ្នកចេញវិក្កយបត្រ (Cashier)</p>
+                <br><br><br>
                 <p>___________________</p>
             </div>
         </div>
         
-        <div class="thank-you">សូមអរគុណ! Thank You!</div>
+        <div class="thank-you">បង់ប្រាក់ហើយមិនអាចដកវិញទេ! Payment must not return!</div>
     </div>
 </div>
     
 </body>
 </html>
+
 
