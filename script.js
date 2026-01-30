@@ -1,5 +1,5 @@
-// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ
-const API_URL = "https://script.google.com/macros/s/AKfycbwZhHGggAyv9PdSLGl0_UZLUrCmVPVKGSdQhnKCCW3ZwtAY8vPyi_T4Yy0rTGSpE0HrqA/exec";
+// 🔥 ដាក់ URL ថ្មីដែលអ្នកទើបតែ Deploy នៅទីនេះ
+const API_URL = "https://script.google.com/macros/s/AKfycbxFkj2sHuPmcm2SzQGvltiFdKqpFZeJqr8ke8cTYps6525l9HDOz1z1YUHTA140o9vHpw/exec";
 
 let allData = [];
 let currentPage = 1;
@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function handleLogin() {
     let u = document.getElementById("loginUser").value;
     let p = document.getElementById("loginPass").value;
+    // Login សាកល្បង
     if((u==="admin" || u==="staff") && p==="123") {
         sessionStorage.setItem("isLogged", "true");
         sessionStorage.setItem("user", u);
@@ -30,17 +31,17 @@ function handleLogin() {
 }
 function logout(){ sessionStorage.clear(); location.reload(); }
 
-// --- 2. FETCH DATA & CALCULATE ---
+// --- 2. FETCH DATA & CALCULATE (FIXED) ---
 async function fetchData() {
     try {
         let res = await fetch(API_URL);
         let data = await res.json();
         
-        // Data Processing
+        // Data Processing: បោសសម្អាតទិន្នន័យ
         allData = data.filter(d => d.id).map(item => {
             return {
                 ...item,
-                // បំប្លែង "600,000 KHR" ទៅជាលេខ 600000
+                // បំប្លែង "600,000 KHR" ទៅជាលេខ 600000 ដើម្បីអាចបូកបាន
                 valFee: cleanMoney(item.schoolFee),
                 valPay1: cleanMoney(item.firstPayment),
                 valPay2: cleanMoney(item.secondPayment),
@@ -50,39 +51,41 @@ async function fetchData() {
 
         updateDashboard();
         renderTable();
-    } catch(e) { console.error("Error:", e); }
+    } catch(e) { console.error("Error fetching data:", e); }
 }
 
-// Function សម្អាតលេខ (សំខាន់បំផុត!)
+// Function សម្អាតលេខ (The Magic Fix!) 
 function cleanMoney(str) {
     if (!str) return 0;
-    // លុបអ្វីក៏ដោយដែលមិនមែនជាលេខ ឬ ចុច (.)
+    // លុបអ្វីក៏ដោយដែលមិនមែនជាលេខ (0-9) ឬ ចុច (.)
+    // ឧទាហរណ៍: "600,000 KHR" -> "600000"
     let clean = str.toString().replace(/[^0-9.]/g, ''); 
     return parseFloat(clean) || 0;
 }
 
-// Function បង្ហាញជាទម្រង់ប្រាក់វិញ (ឧ: 600,000 KHR)
+// Function បង្ហាញជាទម្រង់ប្រាក់វិញ (ដាក់ KHR វិញពេលបង្ហាញ)
 function formatMoney(num) {
     return num.toLocaleString('en-US') + " KHR";
 }
 
 // --- 3. DASHBOARD UPDATE ---
 function updateDashboard() {
-    // ចំនួនសិស្ស
+    // 1. បង្ហាញចំនួនសិស្ស
     document.getElementById("totalStudents").innerText = allData.length;
     
-    // រាប់ Status (មិនប្រកាន់តួអក្សរតូចធំ)
+    // 2. រាប់ Status (Paid/Partial)
     let paid = allData.filter(s => s.status && s.status.toLowerCase().includes("paid")).length;
     let partial = allData.filter(s => s.status && s.status.toLowerCase().includes("partial")).length;
     
     document.getElementById("totalPaidStatus").innerText = paid;
     document.getElementById("totalPartialStatus").innerText = partial;
 
-    // បូកលុយ (ប្រើតម្លៃដែលបានសម្អាតរួច)
+    // 3. បូកលុយ (ប្រើតម្លៃដែលបាន cleanMoney រួច)
     let totalFee = allData.reduce((acc, curr) => acc + curr.valFee, 0);
     let totalPay1 = allData.reduce((acc, curr) => acc + curr.valPay1, 0);
     let totalPay2 = allData.reduce((acc, curr) => acc + curr.valPay2, 0);
 
+    // បង្ហាញផលបូកនៅលើកាត
     document.getElementById("totalSchoolFee").innerText = formatMoney(totalFee);
     document.getElementById("totalFirstPay").innerText = formatMoney(totalPay1);
     document.getElementById("totalSecondPay").innerText = formatMoney(totalPay2);
@@ -127,13 +130,12 @@ function changePage(step) {
     renderTable();
 }
 
-// --- 5. MODAL & PRINT (រក្សាទុកដដែល ឬប្រើកូដខាងក្រោម) ---
+// --- 5. MODAL & PRINT ---
 function openEdit(id) {
     let s = allData.find(x => x.id === id);
     if(!s) return;
     document.getElementById("editModal").style.display = "flex";
     
-    // បំពេញទិន្នន័យ
     document.getElementById("edit-id").value = s.id;
     document.getElementById("edit-class").value = s.classRoom;
     document.getElementById("edit-name").value = s.name;
@@ -160,16 +162,7 @@ function printReceipt(id) {
     window.print();
 }
 
-// Filter Logic
-document.getElementById("searchInput").addEventListener("input", (e)=>{
-    let txt = e.target.value.toLowerCase();
-    // Filter ឈ្មោះ ឬ ID
-    // Note: ដើម្បីងាយស្រួល ខ្ញុំមិនបានដាក់ logic filter ពេញលេញនៅទីនេះទេ
-    // ប៉ុន្តែបើចង់បាន សូមប្រាប់ខ្ញុំ
-});
-
 function switchView(view) {
     ['dashboard','students','settings'].forEach(id => document.getElementById('view-'+id).style.display='none');
     document.getElementById('view-'+view).style.display='block';
 }
-
