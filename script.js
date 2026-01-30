@@ -1,12 +1,12 @@
-// 🔥 ដាក់ URL ថ្មីដែលអ្នកទើបតែ Deploy នៅទីនេះ
+// 🔥 ដាក់ URL ថ្មីដែលអ្នកទើបតែ Deploy នៅទីនេះ (កុំភ្លេចដូរ!)
 const API_URL = "https://script.google.com/macros/s/AKfycbxFkj2sHuPmcm2SzQGvltiFdKqpFZeJqr8ke8cTYps6525l9HDOz1z1YUHTA140o9vHpw/exec";
 
 let allData = [];
 let currentPage = 1;
 const rowsPerPage = 20;
 
+// 1. ចាប់ផ្តើមកម្មវិធី
 document.addEventListener("DOMContentLoaded", () => {
-    // ពិនិត្យ Login
     if(sessionStorage.getItem("isLogged") === "true") {
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("mainApp").style.display = "flex";
@@ -15,11 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// --- 1. LOGIN SYSTEM ---
+// 2. Login
 function handleLogin() {
     let u = document.getElementById("loginUser").value;
     let p = document.getElementById("loginPass").value;
-    // Login សាកល្បង
     if((u==="admin" || u==="staff") && p==="123") {
         sessionStorage.setItem("isLogged", "true");
         sessionStorage.setItem("user", u);
@@ -31,17 +30,19 @@ function handleLogin() {
 }
 function logout(){ sessionStorage.clear(); location.reload(); }
 
-// --- 2. FETCH DATA & CALCULATE (FIXED) ---
+// 3. ទាញទិន្នន័យ (Fetch Data) - កែសម្រួលថ្មី
 async function fetchData() {
     try {
+        console.log("Fetching data from URL...");
         let res = await fetch(API_URL);
         let data = await res.json();
         
-        // Data Processing: បោសសម្អាតទិន្នន័យ
+        console.log("Data received:", data); // មើលក្នុង Console (F12) ថាតើទិន្នន័យចូលមកឬអត់
+
+        // Data Processing: បំប្លែង "600,000 KHR" ទៅជាលេខ
         allData = data.filter(d => d.id).map(item => {
             return {
                 ...item,
-                // បំប្លែង "600,000 KHR" ទៅជាលេខ 600000 ដើម្បីអាចបូកបាន
                 valFee: cleanMoney(item.schoolFee),
                 valPay1: cleanMoney(item.firstPayment),
                 valPay2: cleanMoney(item.secondPayment),
@@ -51,47 +52,45 @@ async function fetchData() {
 
         updateDashboard();
         renderTable();
-    } catch(e) { console.error("Error fetching data:", e); }
+    } catch(e) { 
+        console.error("Error fetching data:", e); 
+        alert("មានបញ្ហាក្នុងការទាញទិន្នន័យ! សូមពិនិត្យមើល URL របស់អ្នក។");
+    }
 }
 
-// Function សម្អាតលេខ (The Magic Fix!) 
+// Function សម្អាតលេខ (សំខាន់បំផុត!)
 function cleanMoney(str) {
     if (!str) return 0;
-    // លុបអ្វីក៏ដោយដែលមិនមែនជាលេខ (0-9) ឬ ចុច (.)
-    // ឧទាហរណ៍: "600,000 KHR" -> "600000"
-    let clean = str.toString().replace(/[^0-9.]/g, ''); 
+    // បំប្លែងទៅជា String ហើយលុបអ្វីដែលមិនមែនជាលេខ
+    let clean = String(str).replace(/[^0-9.]/g, ''); 
     return parseFloat(clean) || 0;
 }
 
-// Function បង្ហាញជាទម្រង់ប្រាក់វិញ (ដាក់ KHR វិញពេលបង្ហាញ)
 function formatMoney(num) {
     return num.toLocaleString('en-US') + " KHR";
 }
 
-// --- 3. DASHBOARD UPDATE ---
+// 4. Update Dashboard
 function updateDashboard() {
-    // 1. បង្ហាញចំនួនសិស្ស
     document.getElementById("totalStudents").innerText = allData.length;
     
-    // 2. រាប់ Status (Paid/Partial)
     let paid = allData.filter(s => s.status && s.status.toLowerCase().includes("paid")).length;
     let partial = allData.filter(s => s.status && s.status.toLowerCase().includes("partial")).length;
     
     document.getElementById("totalPaidStatus").innerText = paid;
     document.getElementById("totalPartialStatus").innerText = partial;
 
-    // 3. បូកលុយ (ប្រើតម្លៃដែលបាន cleanMoney រួច)
+    // បូកលុយ
     let totalFee = allData.reduce((acc, curr) => acc + curr.valFee, 0);
     let totalPay1 = allData.reduce((acc, curr) => acc + curr.valPay1, 0);
     let totalPay2 = allData.reduce((acc, curr) => acc + curr.valPay2, 0);
 
-    // បង្ហាញផលបូកនៅលើកាត
     document.getElementById("totalSchoolFee").innerText = formatMoney(totalFee);
     document.getElementById("totalFirstPay").innerText = formatMoney(totalPay1);
     document.getElementById("totalSecondPay").innerText = formatMoney(totalPay2);
 }
 
-// --- 4. TABLE RENDER ---
+// 5. Render Table
 function renderTable() {
     let tbody = document.getElementById("studentTableBody");
     tbody.innerHTML = "";
@@ -130,12 +129,11 @@ function changePage(step) {
     renderTable();
 }
 
-// --- 5. MODAL & PRINT ---
+// 6. Modal & Print
 function openEdit(id) {
     let s = allData.find(x => x.id === id);
     if(!s) return;
     document.getElementById("editModal").style.display = "flex";
-    
     document.getElementById("edit-id").value = s.id;
     document.getElementById("edit-class").value = s.classRoom;
     document.getElementById("edit-name").value = s.name;
@@ -154,8 +152,8 @@ function printReceipt(id) {
     document.getElementById("printID").innerText = s.id;
     document.getElementById("printClass").innerText = s.classRoom;
     document.getElementById("printFee").innerText = s.schoolFee;
-    document.getElementById("printPay1").innerText = s.firstPayment;
-    document.getElementById("printPay2").innerText = s.secondPayment;
+    document.getElementById("printPay1").innerText = s.firstPayment || "0";
+    document.getElementById("printPay2").innerText = s.secondPayment || "0";
     document.getElementById("printTotal").innerText = s.totalPaid;
     document.getElementById("printBalance").innerText = s.balance;
     document.getElementById("printDate").innerText = new Date().toLocaleDateString();
