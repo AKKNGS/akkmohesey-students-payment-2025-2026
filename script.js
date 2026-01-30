@@ -1,5 +1,5 @@
 // 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ
-const API_URL = "REPLACE_WITH_YOUR_NEW_DEPLOYED_URL_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbznOlNNSOLfBnWtJOF5e66hVaDhLGXzZMfBwIXJlBlAMZPhezWo1S1EB5DMXWJN2EZM6g/exec";
 
 // --- Global Variables ---
 let allData = [];      
@@ -256,3 +256,4 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
