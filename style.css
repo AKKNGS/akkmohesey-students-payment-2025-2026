@@ -186,7 +186,6 @@ tr:hover td { background-color: #f8f9fa; }
 .page-btn:hover:not(:disabled) { background: var(--primary); color: white; border-color: var(--primary); }
 .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* === MODAL & FORM DESIGN (NEW) === */
 /* === MODAL & FORM DESIGN (FIXED) === */
 .modal {
     display: none; /* ត្រូវតែ none ជាមុនសិន */
@@ -267,40 +266,32 @@ tr:hover td { background-color: #f8f9fa; }
 [data-theme="dark"] .modal-footer { background: #1f2937; }
 [data-theme="dark"] .form-group input:disabled { background: #374151; color: #9ca3af; border-color: #4b5563; }
 
-/* === PRINT STYLES === */
-.print-only { display: none; } /* លាក់លើអេក្រង់ធម្មតា */
-
-@media print {
-    body * { visibility: hidden; } /* លាក់អ្វីៗទាំងអស់ */
-    #printArea, #printArea * { visibility: visible; } /* បង្ហាញតែវិក្កយបត្រ */
-    #printArea {
-        position: absolute; left: 0; top: 0; width: 100%;
-        display: block; background: white; color: black;
-    }
-    
-    .receipt-container {
-        width: 100%; max-width: 800px; margin: 0 auto;
-        padding: 40px; border: 2px solid #000;
-        font-family: 'Kantumruy Pro', serif;
-    }
-    .receipt-header { display: flex; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
-    .school-logo i { font-size: 50px; margin-right: 20px; }
-    .school-info h1 { margin: 0; font-size: 24px; }
-    .receipt-title { text-align: center; font-size: 28px; text-decoration: underline; margin: 20px 0; }
-    
-    .student-details { margin: 20px 0; font-size: 16px; line-height: 1.6; }
-    
-    .receipt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .receipt-table th, .receipt-table td { border: 1px solid #000; padding: 10px; }
-    .total-row { font-weight: bold; background: #eee !important; -webkit-print-color-adjust: exact; }
-    .balance-row { font-weight: bold; color: red; }
-    
-    .receipt-footer { display: flex; justify-content: space-between; margin-top: 50px; }
-    .signature { text-align: center; width: 40%; }
-    .thank-you { text-align: center; margin-top: 40px; font-style: italic; }
+/* Edit & Print Buttons */
+.edit-btn {
+    width: 32px; height: 32px; border-radius: 8px; border: none;
+    background: #eff6ff; color: var(--primary); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
 }
+.edit-btn:hover { background: var(--primary); color: white; }
 
-/* Print Button Style */
+.print-btn {
+    width: 32px; height: 32px; border-radius: 8px; border: none;
+    background: #d1fae5; color: #059669; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+.print-btn:hover { background: #059669; color: white; transform: translateY(-2px); }
+
+/* Switch Toggle */
+.switch { position: relative; display: inline-block; width: 48px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(24px); }
+.settings-card { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; }
+.setting-item { display: flex; justify-content: space-between; align-items: center; }
+
 /* === PRINT STYLES === */
 .print-only { display: none; }
 
@@ -441,9 +432,6 @@ tr:hover td { background-color: #f8f9fa; }
         border-color: rgba(255,255,255,0.1);
     }
 
- 
-    /* ... នៅក្នុងផ្នែក @media (max-width: 768px) ... */
-
     /* 4. DASHBOARD CARDS (កែប្រែមកជាការអូសពីលើចុះក្រោម) */
     .cards-grid {
         display: grid; /* ប្រើ Grid វិញ (ឈប់ប្រើ Flex) */
@@ -465,17 +453,11 @@ tr:hover td { background-color: #f8f9fa; }
         grid-column: span 1; 
     }
 
-    /* សម្រួលផ្នែកខាងលើ (Header) ឱ្យមានគម្លាតស្អាត */
-    .page-header {
-        margin-bottom: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
     /* 5. TABLE & SEARCH (ធ្វើឱ្យតារាងស្អាតលើទូរស័ព្ទ) */
     .page-header {
         flex-direction: column;
         align-items: flex-start;
+        margin-bottom: 20px;
         gap: 15px;
     }
     
@@ -506,5 +488,3 @@ tr:hover td { background-color: #f8f9fa; }
     .form-grid { grid-template-columns: 1fr; } /* Form មួយជួរ */
     .full-width { grid-column: span 1; }
 }
-
-
