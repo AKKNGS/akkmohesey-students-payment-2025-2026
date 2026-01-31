@@ -36,9 +36,7 @@
             </button>
             <p id="loginError"><i class="fas fa-exclamation-circle"></i> ឈ្មោះ ឬ លេខសម្ងាត់មិនត្រឹមត្រូវ!</p>
 
-            <div class="login-footer">
-                Demo: <b>admin / 123</b> ឬ <b>staff / 123</b>
-            </div>
+            <div class="login-footer">Demo: <b>admin / 123</b></div>
         </div>
     </div>
 
@@ -72,14 +70,11 @@
                         <small>Online</small>
                     </div>
                 </div>
-                <button onclick="logout()" class="logout-btn" title="Logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+                <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </aside>
 
         <main class="main-content">
-            
             <section id="view-dashboard">
                 <header class="page-header">
                     <div>
@@ -92,46 +87,27 @@
                 <div class="cards-grid">
                     <div class="stat-card">
                         <div class="icon-box blue"><i class="fas fa-users"></i></div>
-                        <div class="stat-info">
-                            <h3>សិស្សសរុប</h3>
-                            <h2 id="totalStudents">...</h2>
-                        </div>
+                        <div class="stat-info"><h3>សិស្សសរុប</h3><h2 id="totalStudents">0</h2></div>
                     </div>
                     <div class="stat-card">
-                        <div class="icon-box green"><i class="fas fa-check-double"></i></div>
-                        <div class="stat-info">
-                            <h3>បង់រួចរាល់</h3>
-                            <h2 id="totalPaidStatus">...</h2>
-                        </div>
+                        <div class="icon-box green"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info"><h3>បង់រួចរាល់</h3><h2 id="totalPaidStatus">0</h2></div>
                     </div>
                     <div class="stat-card">
-                        <div class="icon-box orange"><i class="fas fa-hourglass-half"></i></div>
-                        <div class="stat-info">
-                            <h3>ជំពាក់ (Partial)</h3>
-                            <h2 id="totalPartialStatus">...</h2>
-                        </div>
+                        <div class="icon-box orange"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="stat-info"><h3>ជំពាក់ (Partial)</h3><h2 id="totalPartialStatus">0</h2></div>
                     </div>
-                    
                     <div class="stat-card large-stat">
                         <div class="icon-box purple"><i class="fas fa-coins"></i></div>
-                        <div class="stat-info">
-                            <h3>ចំណូលរំពឹងទុក (១ឆ្នាំ)</h3>
-                            <h2 id="totalSchoolFee">0 KHR</h2>
-                        </div>
+                        <div class="stat-info"><h3>ចំណូលរំពឹងទុក (១ឆ្នាំ)</h3><h2 id="totalSchoolFee">0 KHR</h2></div>
                     </div>
                     <div class="stat-card">
                         <div class="icon-box teal"><i class="fas fa-hand-holding-usd"></i></div>
-                        <div class="stat-info">
-                            <h3>ប្រមូលលើកទី ១</h3>
-                            <h2 id="totalFirstPay">0 KHR</h2>
-                        </div>
+                        <div class="stat-info"><h3>ប្រមូលលើកទី ១</h3><h2 id="totalFirstPay">0 KHR</h2></div>
                     </div>
                     <div class="stat-card">
                         <div class="icon-box red"><i class="fas fa-wallet"></i></div>
-                        <div class="stat-info">
-                            <h3>ប្រមូលលើកទី ២</h3>
-                            <h2 id="totalSecondPay">0 KHR</h2>
-                        </div>
+                        <div class="stat-info"><h3>ប្រមូលលើកទី ២</h3><h2 id="totalSecondPay">0 KHR</h2></div>
                     </div>
                 </div>
             </section>
@@ -142,7 +118,7 @@
                     <div class="action-bar">
                         <div class="search-wrapper">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="ស្វែងរក...">
+                            <input type="text" id="searchInput" placeholder="ស្វែងរក ID ឬ ឈ្មោះ...">
                         </div>
                         <select id="classFilter" class="custom-select">
                             <option value="all">ថ្នាក់ទាំងអស់</option>
@@ -170,9 +146,9 @@
                 </div>
                 
                 <div class="pagination-wrapper">
-                    <button onclick="changePage(-1)" id="btnPrev" class="page-btn"><i class="fas fa-chevron-left"></i> Prev</button>
+                    <button onclick="changePage(-1)" id="btnPrev" class="page-btn">Previous</button>
                     <span id="pageIndicator">Page 1 of 1</span>
-                    <button onclick="changePage(1)" id="btnNext" class="page-btn">Next <i class="fas fa-chevron-right"></i></button>
+                    <button onclick="changePage(1)" id="btnNext" class="page-btn">Next</button>
                 </div>
             </section>
 
@@ -180,10 +156,7 @@
                 <header class="page-header"><h1>ការកំណត់</h1></header>
                 <div class="settings-card">
                     <div class="setting-item">
-                        <div class="setting-info">
-                            <h3>Dark Mode</h3>
-                            <p>ផ្លាស់ប្តូរទៅប្រើផ្ទៃពណ៌ងងឹត</p>
-                        </div>
+                        <div class="setting-info"><h3>Dark Mode</h3><p>ផ្លាស់ប្តូរទៅប្រើផ្ទៃពណ៌ងងឹត</p></div>
                         <label class="switch">
                             <input type="checkbox" id="themeSwitch">
                             <span class="slider round"></span>
@@ -191,8 +164,22 @@
                     </div>
                 </div>
             </section>
-
         </main>
+
+        <div class="mobile-nav">
+            <div class="nav-item active" onclick="switchView('dashboard')" id="mob-dashboard">
+                <div class="icon-container"><i class="fas fa-home"></i></div>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchView('students')" id="mob-students">
+                <div class="icon-container"><i class="fas fa-user-graduate"></i></div>
+                <span>Students</span>
+            </div>
+            <div class="nav-item" onclick="switchView('settings')" id="mob-settings">
+                <div class="icon-container"><i class="fas fa-cog"></i></div>
+                <span>Settings</span>
+            </div>
+        </div>
     </div>
 
     <div id="editModal" class="modal">
@@ -231,17 +218,50 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" onclick="closeModal()" class="cancel-btn">បោះបង់</button>
-                    <button type="submit" class="save-btn">រក្សាទុក</button>
+                    <button type="button" onclick="closeModal()" class="btn-cancel">បោះបង់</button>
+                    <button type="submit" class="btn-save">រក្សាទុក</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <div id="printArea" class="print-only">
+        <div class="receipt-container">
+            <div class="receipt-header">
+                <img src="logo.jpg" alt="Logo" class="real-logo">
+                <div class="school-info">
+                    <h1>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
+                    <p>អាសយដ្ឋាន: ភ្នំពេញ | ទូរស័ព្ទ: 012 345 678</p>
+                </div>
+            </div>
+            <div class="receipt-divider"></div>
+            <h2 class="receipt-title">បង្កាន់ដៃទទួលប្រាក់ (RECEIPT)</h2>
+            <div class="receipt-date">កាលបរិច្ឆេទ: <span id="printDate"></span></div>
+
+            <div class="student-details">
+                <p><strong>ឈ្មោះ:</strong> <span id="printName"></span></p>
+                <p><strong>ID:</strong> <span id="printID"></span></p>
+                <p><strong>ថ្នាក់:</strong> <span id="printClass"></span></p>
+            </div>
+
+            <table class="receipt-table">
+                <tr><td>តម្លៃសិក្សា</td><td align="right" id="printFee"></td></tr>
+                <tr><td>បង់លើកទី ១</td><td align="right" id="printPay1"></td></tr>
+                <tr><td>បង់លើកទី ២</td><td align="right" id="printPay2"></td></tr>
+                <tr class="total-row"><td>សរុបបានបង់</td><td align="right" id="printTotal"></td></tr>
+                <tr class="balance-row"><td>នៅជំពាក់</td><td align="right" id="printBalance"></td></tr>
+            </table>
+
+            <div class="receipt-footer">
+                <div class="signature"><p>ហត្ថលេខាអ្នកបង់</p><br><br>_______</div>
+                <div class="signature"><p>ហត្ថលេខាបេឡា</p><br><br>_______</div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script>
-        // បន្ថែមថ្ងៃខែឆ្នាំបច្ចុប្បន្ន
-        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('km-KH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('km-KH');
     </script>
 </body>
 </html>
