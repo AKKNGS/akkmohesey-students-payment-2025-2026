@@ -1,46 +1,77 @@
+// 🔥 ដាក់ URL ថ្មីរបស់អ្នកនៅទីនេះ
 const API_URL = "https://script.google.com/macros/s/AKfycbxuaSA1qRHOvTRvriKl1F76e-FU9maGdBFd7ubMCBhDmzkldPpIBRyclCskntkKiyL6eg/exec";
 
-let allData = [], filteredData = [], currentPage = 1;
-const rowsPerPage = 20; let currentUserRole = "";
+let allData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-    if(sessionStorage.getItem("isLoggedIn") === "true") {
-        currentUserRole = sessionStorage.getItem("userRole");
-        document.getElementById("loginOverlay").style.display = "none";
-        document.getElementById("mainApp").style.display = "flex";
-        document.getElementById("userDisplay").innerText = sessionStorage.getItem("username");
-        loadTheme(); fetchData();
-    } else { document.getElementById("loginOverlay").style.display = "flex"; }
-    
-    document.getElementById("searchInput").addEventListener("input", filterData);
-    document.getElementById("classFilter").addEventListener("change", filterData);
-    document.getElementById("themeSwitch").addEventListener("change", (e) => toggleTheme(e.target.checked));
+    fetchData(); // ទាញទិន្នន័យភ្លាមៗ
 });
-
-function handleLogin() {
-    const u = document.getElementById("loginUser").value.trim();
-    const p = document.getElementById("loginPass").value.trim();
-    if((u==="admin" || u==="staff") && p==="123") {
-        sessionStorage.setItem("isLoggedIn", "true");
-        sessionStorage.setItem("username", u);
-        sessionStorage.setItem("userRole", u==="admin"?"admin":"viewer");
-        location.reload();
-    } else { document.getElementById("loginError").style.display="block"; }
-}
-function logout(){ sessionStorage.clear(); location.reload(); }
 
 async function fetchData() {
     try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        const unique = new Map();
-        data.forEach(item => { if(item.id) unique.set(item.id, item); });
-        allData = Array.from(unique.values());
-        filteredData = [...allData];
-        setupDropdown(allData); updateDashboard(allData); renderPagination();
-    } catch(e) { console.error(e); }
+        console.log("កំពុងទាញទិន្នន័យ...");
+        let res = await fetch(API_URL);
+        let data = await res.json();
+        
+        console.log("ទិន្នន័យ:", data);
+
+        // Processing Data
+        allData = data.map(item => {
+            return {
+                ...item,
+                // សម្អាតលេខ (ឧ: "600,000 KHR" -> 600000)
+                valFee: cleanMoney(item.schoolFee),
+                valPay1: cleanMoney(item.firstPayment),
+                valPay2: cleanMoney(item.secondPayment),
+                valTotal: cleanMoney(item.totalPaid)
+            };
+        });
+
+        updateDashboard();
+        // renderTable(); // ហៅ function renderTable របស់អ្នក (បើមាន)
+        
+    } catch(e) { 
+        console.error("Error:", e); 
+    }
 }
 
+// Function សំខាន់សម្រាប់ដោះស្រាយបញ្ហា Dashboard = 0
+function cleanMoney(str) {
+    if (!str) return 0;
+    let clean = String(str).replace(/[^0-9.]/g, ''); // លុបអក្សរ KHR និង , ចោល
+    return parseFloat(clean) || 0;
+}
+
+function formatMoney(num) {
+    return num.toLocaleString('en-US') + " KHR";
+}
+
+function updateDashboard() {
+    // 1. បង្ហាញចំនួនសិស្ស
+    document.getElementById("totalStudents").innerText = allData.length;
+    
+    // 2. រាប់ Status (ការពារ Error)
+    let paid = 0, partial = 0;
+    allData.forEach(s => {
+        let status = s.status ? s.status.toLowerCase() : "";
+        if(status.includes("paid")) paid++;
+        else partial++; // បើមិនមែន Paid គឺ Partial ទាំងអស់
+    });
+
+    document.getElementById("totalPaidStatus").innerText = paid;
+    document.getElementById("totalPartialStatus").innerText = partial;
+
+    // 3. បូកលុយ
+    let income = allData.reduce((acc, item) => acc + item.valFee, 0);
+    let pay1 = allData.reduce((acc, item) => acc + item.valPay1, 0);
+    let pay2 = allData.reduce((acc, item) => acc + item.valPay2, 0);
+
+    document.getElementById("totalSchoolFee").innerText = formatMoney(income);
+    document.getElementById("totalFirstPay").innerText = formatMoney(pay1);
+    document.getElementById("totalSecondPay").innerText = formatMoney(pay2);
+}
+
+// ... (ដាក់កូដ Render Table និងមុខងារផ្សេងៗរបស់អ្នកនៅខាងក្រោមនេះ)
 function renderPagination() {
     const tbody = document.getElementById("studentTableBody");
     tbody.innerHTML = "";
@@ -134,5 +165,6 @@ function switchView(view) {
     ['dashboard', 'students', 'settings'].forEach(v => document.getElementById('view-'+v).style.display = 'none');
     document.getElementById('view-'+view).style.display = 'block';
 }
+
 
 
