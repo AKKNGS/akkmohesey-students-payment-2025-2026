@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbznOlNNSOLfBnWtJOF5e66hVaDhLGXzZMfBwIXJlBlAMZPhezWo1S1EB5DMXWJN2EZM6g/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxuaSA1qRHOvTRvriKl1F76e-FU9maGdBFd7ubMCBhDmzkldPpIBRyclCskntkKiyL6eg/exec";
 
 // --- Global Variables ---
 let allData = [];      
@@ -255,3 +255,4 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
