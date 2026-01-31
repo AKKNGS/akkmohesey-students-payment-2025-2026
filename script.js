@@ -181,21 +181,30 @@ function updateDashboard(data) {
 // ផ្នែកទី ៥: EDIT & UTILS (កែសម្រួលកូដត្រង់នេះ)
 // =========================================
 
-// រង់ចាំឱ្យ Page Load ចប់សិន ចាំចាប់យក Form
+// =========================================
+// ផ្នែកទី ៥: EDIT & UTILS (កែសម្រួលកូដត្រង់នេះ)
+// =========================================
+
+// ១. រង់ចាំឱ្យ Web Load ចប់សិន ចាំចាប់យក Form
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("Page Loaded. Searching for editForm..."); // Check 1
+
     const editForm = document.getElementById("editForm");
     
     if (editForm) {
+        console.log("Found editForm! Adding Event Listener."); // Check 2
+
         editForm.addEventListener("submit", async (e) => {
-            e.preventDefault(); // ហាមមិនឱ្យ Refresh Page
-            
-            // ១. ចាប់យកប៊ូតុង និងប្តូរអក្សរអោយគេដឹងថា "កំពុងធ្វើការ"
+            e.preventDefault(); 
+            console.log("Save Button Clicked!"); // Check 3
+
+            // ២. ចាប់យកប៊ូតុង និងប្តូរអក្សរ
             const btn = document.querySelector(".save-btn");
             const oldText = btn.innerText;
-            btn.innerText = "កំពុងរក្សាទុក..."; // ប្តូរអក្សរភ្លាមៗ
-            btn.disabled = true; // បិទប៊ូតុងកុំឱ្យចុចស្ទួន
+            btn.innerText = "កំពុងរក្សាទុក...";
+            btn.disabled = true;
 
-            // ២. រៀបចំទិន្នន័យ
+            // ៣. រៀបចំទិន្នន័យ
             const payload = {
                 id: document.getElementById("edit-id").value,
                 classRoom: document.getElementById("edit-class").value,
@@ -205,36 +214,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 status: document.getElementById("edit-status").value
             };
 
-            console.log("Sending Data:", payload); // មើលក្នុង Console ថាទិន្នន័យចេញអត់?
+            console.log("Payload to send:", payload); // Check 4
 
             try {
-                // ៣. ផ្ញើទៅ Google Sheet
-                // ចំណាំ: ប្រើ mode: 'no-cors' បើអ្នកមិនត្រូវការ Response ត្រឡប់មកវិញ
-                // ឬប្រើធម្មតា បើ Web App របស់អ្នក Set ឱ្យ Return JSON ត្រឹមត្រូវ
+                // ៤. ផ្ញើទៅ Google Sheet
+                // សំខាន់៖ ត្រូវប្រាកដថា API_URL ជា Link ថ្មីដែលបាន Deploy
                 await fetch(API_URL, { 
                     method: 'POST',
-                    mode: 'no-cors', // សាកល្បងដាក់ no-cors បើវាជាប់បញ្ហា
+                    mode: 'no-cors', 
                     headers: {
                         "Content-Type": "text/plain;charset=utf-8",
                     },
                     body: JSON.stringify(payload) 
                 });
 
-                alert("ជោគជ័យ! ទិន្នន័យត្រូវបានរក្សាទុក។");
+                // ដោយសារ mode: 'no-cors' យើងមិនដឹងថាវា Success ម៉ោងណាទេ
+                // យើងសន្មតថាជោគជ័យ ហើយបិទផ្ទាំងតែម្តង
+                alert("ទិន្នន័យត្រូវបានបញ្ជូន!"); 
                 closeModal();
-                fetchData(); // ទាញទិន្នន័យថ្មីមកបង្ហាញ
+                
+                // រង់ចាំ ២ វិនាទីចាំទាញទិន្នន័យថ្មី (ទុកពេលឱ្យ Google Sheet សរសេរ)
+                setTimeout(() => {
+                    fetchData();
+                }, 2000);
                 
             } catch (err) {
-                console.error(err);
-                alert("មានបញ្ហាពេលរក្សាទុក! សូមពិនិត្យមើល Console");
+                console.error("Error:", err);
+                alert("មានបញ្ហា! សូមមើល Console");
             } finally {
-                // ៤. ដាក់ប៊ូតុងឱ្យដូចដើមវិញ ទោះជោគជ័យ ឬ បរាជ័យ
                 btn.innerText = oldText;
                 btn.disabled = false;
             }
         });
     } else {
-        console.error("រកមិនឃើញ Form ដែលមាន ID 'editForm' ទេ!");
+        console.error("❌ រកមិនឃើញ Form ឈ្មោះ 'editForm' ទេ!");
     }
 });
 function closeModal() { document.getElementById("editModal").style.display = "none"; }
@@ -300,5 +313,6 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
 
 
