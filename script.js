@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbznOlNNSOLfBnWtJOF5e66hVaDhLGXzZMfBwIXJlBlAMZPhezWo1S1EB5DMXWJN2EZM6g/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxuaSA1qRHOvTRvriKl1F76e-FU9maGdBFd7ubMCBhDmzkldPpIBRyclCskntkKiyL6eg/exec";
 
 let allData = [], filteredData = [], currentPage = 1;
 const rowsPerPage = 20; let currentUserRole = "";
@@ -134,4 +134,5 @@ function switchView(view) {
     ['dashboard', 'students', 'settings'].forEach(v => document.getElementById('view-'+v).style.display = 'none');
     document.getElementById('view-'+view).style.display = 'block';
 }
+
 
