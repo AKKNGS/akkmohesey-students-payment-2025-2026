@@ -256,3 +256,4 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
