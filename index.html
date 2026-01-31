@@ -238,6 +238,38 @@
         </div>
     </div>
 
+    <div id="printArea" class="print-only">
+        <div class="receipt-container">
+            <div class="receipt-header">
+                <div class="receipt-logo"><img src="logo.jpg" alt="Logo"></div>
+                <h1>សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
+                <p>អាសយដ្ឋាន: ភ្នំពេញ, កម្ពុជា | លេខទូរស័ព្ទ: 012 345 678</p>
+            </div>
+            <h2 style="text-align:center; text-decoration:underline; margin:20px 0;">បង្កាន់ដៃទទួលប្រាក់ (RECEIPT)</h2>
+            <p>កាលបរិច្ឆេទ: <span id="printDate"></span></p>
+            <div style="margin:20px 0; line-height:1.6;">
+                <p>ឈ្មោះសិស្ស: <strong id="printName"></strong></p>
+                <p>អត្តលេខ (ID): <strong id="printID"></strong></p>
+                <p>ថ្នាក់: <strong id="printClass"></strong></p>
+            </div>
+            <table class="receipt-table">
+                <tr><td>តម្លៃសិក្សា</td><td align="right" id="printFee"></td></tr>
+                <tr><td>បង់លើកទី ១</td><td align="right" id="printPay1"></td></tr>
+                <tr><td>បង់លើកទី ២</td><td align="right" id="printPay2"></td></tr>
+                <tr style="font-weight:bold; background:#eee;"><td>សរុបបានបង់</td><td align="right" id="printTotal"></td></tr>
+                <tr style="font-weight:bold; color:red;"><td>នៅជំពាក់</td><td align="right" id="printBalance"></td></tr>
+            </table>
+            <div class="receipt-footer">
+                <div style="text-align:center;">
+                    <p>ហត្ថលេខាអ្នកបង់</p><br><br>________________
+                </div>
+                <div style="text-align:center;">
+                    <p>ហត្ថលេខាបេឡា</p><br><br>________________
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script>
         // បន្ថែមថ្ងៃខែឆ្នាំបច្ចុប្បន្ន
@@ -245,3 +277,4 @@
     </script>
 </body>
 </html>
+
