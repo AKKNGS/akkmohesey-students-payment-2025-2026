@@ -134,3 +134,4 @@ function switchView(view) {
     ['dashboard', 'students', 'settings'].forEach(v => document.getElementById('view-'+v).style.display = 'none');
     document.getElementById('view-'+view).style.display = 'block';
 }
+
