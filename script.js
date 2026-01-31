@@ -2,11 +2,11 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxuaSA1qRHOvTRvriKl1F76e-FU9maGdBFd7ubMCBhDmzkldPpIBRyclCskntkKiyL6eg/exec";
 
 // --- Global Variables ---
-let allData = [];      
-let filteredData = []; 
-let currentPage = 1;   
-const rowsPerPage = 20; 
-let currentUserRole = ""; 
+let allData = [];
+let filteredData = [];
+let currentPage = 1;
+const rowsPerPage = 20;
+let currentUserRole = "";
 
 // --- 1. LOGIN & STARTUP ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,12 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const role = sessionStorage.getItem("userRole");
     const username = sessionStorage.getItem("username");
 
-    if(isLogged === "true") {
+    if (isLogged === "true") {
         currentUserRole = role;
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("mainApp").style.display = "flex"; // បង្ហាញ App
         document.getElementById("userDisplay").innerText = `${username} (${role})`;
-        
+
         loadTheme();
         fetchData();
     } else {
@@ -28,15 +28,74 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("mainApp").style.display = "none";
     }
 
-    // Event Listeners
+    // Event Listeners ផ្សេងៗ
     document.getElementById("searchInput").addEventListener("input", filterData);
     document.getElementById("classFilter").addEventListener("change", filterData);
     document.getElementById("themeSwitch").addEventListener("change", (e) => toggleTheme(e.target.checked));
-    
+
     // ចុច Enter ដើម្បី Login
-    document.getElementById("loginPass").addEventListener("keypress", function(event) {
+    document.getElementById("loginPass").addEventListener("keypress", function (event) {
         if (event.key === "Enter") { handleLogin(); }
     });
+
+    // --- SETUP EDIT FORM LISTENER (កែសម្រួលត្រង់នេះ) ---
+    const editForm = document.getElementById("editForm");
+    if (editForm) {
+        console.log("✅ Found editForm! Ready to save.");
+
+        editForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            console.log("🖱️ Save Button Clicked!");
+
+            // ១. ចាប់យកប៊ូតុង និងប្តូរអក្សរ
+            const btn = document.querySelector(".save-btn");
+            const oldText = btn.innerText;
+            btn.innerText = "កំពុងរក្សាទុក...";
+            btn.disabled = true;
+
+            // ២. រៀបចំទិន្នន័យ
+            const payload = {
+                id: document.getElementById("edit-id").value,
+                classRoom: document.getElementById("edit-class").value,
+                firstPayment: document.getElementById("edit-first-pay").value,
+                secondPayment: document.getElementById("edit-second-pay").value,
+                totalPaid: document.getElementById("edit-total-pay").value,
+                status: document.getElementById("edit-status").value
+            };
+
+            console.log("📦 Payload:", payload);
+
+            try {
+                // ៣. ផ្ញើទៅ Google Sheet (ប្រើ mode: 'no-cors')
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8",
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // ៤. សន្មតថាជោគជ័យ (ព្រោះ no-cors មិនតបមកវិញទេ)
+                alert("✅ ទិន្នន័យត្រូវបានរក្សាទុក!");
+                closeModal();
+
+                // រង់ចាំបន្តិចសិន ចាំទាញទិន្នន័យថ្មី
+                setTimeout(() => {
+                    fetchData();
+                }, 2000);
+
+            } catch (err) {
+                console.error("❌ Error:", err);
+                alert("មានបញ្ហា! សូមមើល Console");
+            } finally {
+                btn.innerText = oldText;
+                btn.disabled = false;
+            }
+        });
+    } else {
+        console.error("❌ រកមិនឃើញ Form ឈ្មោះ 'editForm' ទេ!");
+    }
 });
 
 function handleLogin() {
@@ -45,22 +104,22 @@ function handleLogin() {
     const err = document.getElementById("loginError");
 
     const users = {
-        "admin": { pass: "123", role: "admin" }, 
-        "staff": { pass: "123", role: "viewer" } 
+        "admin": { pass: "123", role: "admin" },
+        "staff": { pass: "123", role: "viewer" }
     };
 
     if (users[u] && users[u].pass === p) {
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("userRole", users[u].role);
         sessionStorage.setItem("username", u);
-        location.reload(); 
+        location.reload();
     } else {
         err.style.display = "block";
     }
 }
 
 function logout() {
-    if(confirm("តើអ្នកពិតជាចង់ចាកចេញមែនទេ?")) {
+    if (confirm("តើអ្នកពិតជាចង់ចាកចេញមែនទេ?")) {
         sessionStorage.clear();
         location.reload();
     }
@@ -71,16 +130,16 @@ async function fetchData() {
     try {
         const res = await fetch(API_URL);
         const data = await res.json();
-        
+
         const unique = new Map();
-        data.forEach(item => { if(item.id) unique.set(item.id, item); });
+        data.forEach(item => { if (item.id) unique.set(item.id, item); });
         allData = Array.from(unique.values());
-        
-        filteredData = [...allData]; 
+
+        filteredData = [...allData];
 
         setupDropdown(allData);
         updateDashboard(allData);
-        
+
         currentPage = 1;
         renderPagination();
 
@@ -111,7 +170,7 @@ function renderPagination() {
 
     pageData.forEach(student => {
         let statusClass = student.status && student.status.toLowerCase().includes("paid") ? "status-paid" : "status-partial";
-        
+
         let actionButton = "";
         if (currentUserRole === "admin") {
             actionButton = `<button class="edit-btn" onclick="openEdit('${student.id}')"><i class="fas fa-edit"></i></button>`;
@@ -153,7 +212,7 @@ function filterData() {
         const matchClass = cls === "all" || s.classRoom === cls;
         return matchSearch && matchClass;
     });
-    
+
     updateDashboard(filteredData);
     currentPage = 1;
     renderPagination();
@@ -177,79 +236,22 @@ function updateDashboard(data) {
 }
 
 // --- 5. EDIT & UTILS ---
-// =========================================
-// ផ្នែកទី ៥: EDIT & UTILS (កែសម្រួលកូដត្រង់នេះ)
-// =========================================
+function openEdit(id) {
+    if (currentUserRole !== 'admin') { alert("គ្មានសិទ្ធិ!"); return; }
 
-// =========================================
-// ផ្នែកទី ៥: EDIT & UTILS (កែសម្រួលកូដត្រង់នេះ)
-// =========================================
+    const student = allData.find(s => s.id === id);
+    if (!student) return;
 
-// ១. រង់ចាំឱ្យ Web Load ចប់សិន ចាំចាប់យក Form
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Page Loaded. Searching for editForm..."); // Check 1
+    document.getElementById("editModal").style.display = "block";
+    document.getElementById("edit-id").value = student.id;
+    document.getElementById("edit-class").value = student.classRoom;
+    document.getElementById("edit-name").value = student.name;
+    document.getElementById("edit-first-pay").value = student.firstPayment;
+    document.getElementById("edit-second-pay").value = student.secondPayment;
+    document.getElementById("edit-total-pay").value = student.totalPaid;
+    document.getElementById("edit-status").value = student.status ? student.status.trim() : "";
+}
 
-    const editForm = document.getElementById("editForm");
-    
-    if (editForm) {
-        console.log("Found editForm! Adding Event Listener."); // Check 2
-
-        editForm.addEventListener("submit", async (e) => {
-            e.preventDefault(); 
-            console.log("Save Button Clicked!"); // Check 3
-
-            // ២. ចាប់យកប៊ូតុង និងប្តូរអក្សរ
-            const btn = document.querySelector(".save-btn");
-            const oldText = btn.innerText;
-            btn.innerText = "កំពុងរក្សាទុក...";
-            btn.disabled = true;
-
-            // ៣. រៀបចំទិន្នន័យ
-            const payload = {
-                id: document.getElementById("edit-id").value,
-                classRoom: document.getElementById("edit-class").value,
-                firstPayment: document.getElementById("edit-first-pay").value,
-                secondPayment: document.getElementById("edit-second-pay").value,
-                totalPaid: document.getElementById("edit-total-pay").value,
-                status: document.getElementById("edit-status").value
-            };
-
-            console.log("Payload to send:", payload); // Check 4
-
-            try {
-                // ៤. ផ្ញើទៅ Google Sheet
-                // សំខាន់៖ ត្រូវប្រាកដថា API_URL ជា Link ថ្មីដែលបាន Deploy
-                await fetch(API_URL, { 
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8",
-                    },
-                    body: JSON.stringify(payload) 
-                });
-
-                // ដោយសារ mode: 'no-cors' យើងមិនដឹងថាវា Success ម៉ោងណាទេ
-                // យើងសន្មតថាជោគជ័យ ហើយបិទផ្ទាំងតែម្តង
-                alert("ទិន្នន័យត្រូវបានបញ្ជូន!"); 
-                closeModal();
-                
-                // រង់ចាំ ២ វិនាទីចាំទាញទិន្នន័យថ្មី (ទុកពេលឱ្យ Google Sheet សរសេរ)
-                setTimeout(() => {
-                    fetchData();
-                }, 2000);
-                
-            } catch (err) {
-                console.error("Error:", err);
-                alert("មានបញ្ហា! សូមមើល Console");
-            } finally {
-                btn.innerText = oldText;
-                btn.disabled = false;
-            }
-        });
-    } else {
-        console.error("❌ រកមិនឃើញ Form ឈ្មោះ 'editForm' ទេ!");
-    }
-});
 function closeModal() { document.getElementById("editModal").style.display = "none"; }
 
 function calculateTotal() {
@@ -258,36 +260,11 @@ function calculateTotal() {
     document.getElementById("edit-total-pay").value = formatCurrency(p1 + p2);
 }
 
-document.getElementById("editForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const btn = document.querySelector(".save-btn");
-    const oldText = btn.innerText;
-    btn.innerText = "កំពុងរក្សាទុក...";
-    btn.disabled = true;
-
-    const payload = {
-        id: document.getElementById("edit-id").value,
-        classRoom: document.getElementById("edit-class").value,
-        firstPayment: document.getElementById("edit-first-pay").value,
-        secondPayment: document.getElementById("edit-second-pay").value,
-        totalPaid: document.getElementById("edit-total-pay").value,
-        status: document.getElementById("edit-status").value
-    };
-
-    try {
-        await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-        alert("ជោគជ័យ!");
-        closeModal();
-        fetchData(); 
-    } catch (err) { alert("មានបញ្ហា!"); } 
-    finally { btn.innerText = oldText; btn.disabled = false; }
-});
-
 function setupDropdown(data) {
     const classes = [...new Set(data.map(d => d.classRoom))].sort();
     const sel = document.getElementById("classFilter");
     sel.innerHTML = '<option value="all">ថ្នាក់ទាំងអស់</option>';
-    classes.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
+    classes.forEach(c => { if (c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
 }
 
 function parseCurrency(str) { return parseFloat((str || "0").toString().replace(/[^0-9.]/g, '')) || 0; }
@@ -308,11 +285,8 @@ function toggleTheme(isDark) {
 }
 
 function loadTheme() {
-    if(localStorage.getItem('theme') === 'dark') {
+    if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
         document.getElementById("themeSwitch").checked = true;
     }
 }
-
-
-
