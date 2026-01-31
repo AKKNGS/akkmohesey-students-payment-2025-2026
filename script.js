@@ -177,22 +177,66 @@ function updateDashboard(data) {
 }
 
 // --- 5. EDIT & UTILS ---
-function openEdit(id) {
-    if(currentUserRole !== 'admin') { alert("គ្មានសិទ្ធិ!"); return; }
+// =========================================
+// ផ្នែកទី ៥: EDIT & UTILS (កែសម្រួលកូដត្រង់នេះ)
+// =========================================
+
+// រង់ចាំឱ្យ Page Load ចប់សិន ចាំចាប់យក Form
+document.addEventListener("DOMContentLoaded", () => {
+    const editForm = document.getElementById("editForm");
     
-    const student = allData.find(s => s.id === id);
-    if(!student) return;
+    if (editForm) {
+        editForm.addEventListener("submit", async (e) => {
+            e.preventDefault(); // ហាមមិនឱ្យ Refresh Page
+            
+            // ១. ចាប់យកប៊ូតុង និងប្តូរអក្សរអោយគេដឹងថា "កំពុងធ្វើការ"
+            const btn = document.querySelector(".save-btn");
+            const oldText = btn.innerText;
+            btn.innerText = "កំពុងរក្សាទុក..."; // ប្តូរអក្សរភ្លាមៗ
+            btn.disabled = true; // បិទប៊ូតុងកុំឱ្យចុចស្ទួន
 
-    document.getElementById("editModal").style.display = "block";
-    document.getElementById("edit-id").value = student.id;
-    document.getElementById("edit-class").value = student.classRoom;
-    document.getElementById("edit-name").value = student.name;
-    document.getElementById("edit-first-pay").value = student.firstPayment;
-    document.getElementById("edit-second-pay").value = student.secondPayment;
-    document.getElementById("edit-total-pay").value = student.totalPaid;
-    document.getElementById("edit-status").value = student.status ? student.status.trim() : "";
-}
+            // ២. រៀបចំទិន្នន័យ
+            const payload = {
+                id: document.getElementById("edit-id").value,
+                classRoom: document.getElementById("edit-class").value,
+                firstPayment: document.getElementById("edit-first-pay").value,
+                secondPayment: document.getElementById("edit-second-pay").value,
+                totalPaid: document.getElementById("edit-total-pay").value,
+                status: document.getElementById("edit-status").value
+            };
 
+            console.log("Sending Data:", payload); // មើលក្នុង Console ថាទិន្នន័យចេញអត់?
+
+            try {
+                // ៣. ផ្ញើទៅ Google Sheet
+                // ចំណាំ: ប្រើ mode: 'no-cors' បើអ្នកមិនត្រូវការ Response ត្រឡប់មកវិញ
+                // ឬប្រើធម្មតា បើ Web App របស់អ្នក Set ឱ្យ Return JSON ត្រឹមត្រូវ
+                await fetch(API_URL, { 
+                    method: 'POST',
+                    mode: 'no-cors', // សាកល្បងដាក់ no-cors បើវាជាប់បញ្ហា
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8",
+                    },
+                    body: JSON.stringify(payload) 
+                });
+
+                alert("ជោគជ័យ! ទិន្នន័យត្រូវបានរក្សាទុក។");
+                closeModal();
+                fetchData(); // ទាញទិន្នន័យថ្មីមកបង្ហាញ
+                
+            } catch (err) {
+                console.error(err);
+                alert("មានបញ្ហាពេលរក្សាទុក! សូមពិនិត្យមើល Console");
+            } finally {
+                // ៤. ដាក់ប៊ូតុងឱ្យដូចដើមវិញ ទោះជោគជ័យ ឬ បរាជ័យ
+                btn.innerText = oldText;
+                btn.disabled = false;
+            }
+        });
+    } else {
+        console.error("រកមិនឃើញ Form ដែលមាន ID 'editForm' ទេ!");
+    }
+});
 function closeModal() { document.getElementById("editModal").style.display = "none"; }
 
 function calculateTotal() {
@@ -256,4 +300,5 @@ function loadTheme() {
         document.getElementById("themeSwitch").checked = true;
     }
 }
+
 
